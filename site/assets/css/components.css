@@ -1,0 +1,1420 @@
+/* ==========================================================================
+   iNNOVATEQ — Reusable Components
+   ========================================================================== */
+
+/* ---------------------------------------------------------------------- */
+/* Site Header / Navigation                                               */
+/* ---------------------------------------------------------------------- */
+.site-header {
+  position: fixed; inset: 0 0 auto 0; z-index: var(--z-header);
+  height: 84px;
+  display: flex; align-items: center;
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background var(--transition-normal), border-color var(--transition-normal), height var(--transition-normal), box-shadow var(--transition-normal), backdrop-filter var(--transition-normal);
+}
+/* Default (top-of-page) state assumes a dark hero/page-header sits behind the
+   header on every page in this site, so header content starts light. */
+.site-header.is-scrolled {
+  height: 68px;
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  border-bottom-color: var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+/* Escape hatch: a page can force the light (top) treatment even while
+   scrolled by adding is-on-light to <body> (none currently need it). */
+.site-header.is-menu-open { background: var(--color-ink-950); border-bottom-color: transparent; }
+
+/* Homepage: a separate, permanently-solid header row that takes up real
+   space at the top of the document — the hero carousel starts right below
+   it instead of sitting underneath it. Full unconditional styling (not
+   dependent on the .is-scrolled class navigation.js toggles) lives in the
+   "Homepage header" block near the end of this section, so the solid
+   background/dark text/right-sized logo apply from first paint with no
+   dependency on JS having run yet. Interior pages are untouched and keep
+   the original transparent-over-dark-hero overlay header. */
+
+.header-inner {
+  width: 100%; max-width: var(--container-max); margin-inline: auto;
+  padding-inline: var(--gutter);
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-lg);
+}
+
+.brand { display: flex; align-items: center; }
+/* The logo is a full-colour raster mark with a dark wordmark baked in, so it
+   needs a guaranteed-light backing plate to stay readable over the dark
+   hero that sits behind the header at the top of every page — this is a
+   contrast fix, not a redesign of the mark itself; proportions are untouched. */
+.brand-mark {
+  flex: none;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  padding: 0.5rem 0.85rem;
+  box-shadow: 0 1px 3px rgba(9, 15, 30, 0.12);
+  transition: padding var(--transition-normal);
+}
+.brand-mark img { display: block; height: 30px; width: auto; }
+.site-header.is-scrolled .brand-mark { padding: 0.35rem 0.65rem; }
+.site-header.is-scrolled .brand-mark img { height: 24px; }
+
+/* Homepage brand-mark/logo sizing lives in the unconditional "Homepage
+   header" block near the end of this section (not here) — see the note
+   above .header-inner. */
+
+.main-nav { display: none; }
+@media (min-width: 992px) {
+  /* .header-actions still exists at this width (it just hides the toggle
+     button inside it), so as a 3rd flex item it was eating one of
+     justify-content:space-between's gap slots and leaving .main-nav short
+     of the container's true right edge. margin-left:auto makes .main-nav
+     itself hug flush against .header-actions instead, which is what
+     actually reaches the edge. */
+  .main-nav { display: flex; align-items: center; margin-left: auto; }
+}
+.nav-list { display: flex; align-items: center; gap: var(--space-lg); }
+.nav-item { position: relative; }
+.nav-link {
+  display: flex; align-items: center; gap: 0.35em;
+  padding: 0.5rem 0.1rem;
+  font-size: var(--fs-sm); font-weight: 500;
+  color: rgba(255, 255, 255, 0.92);
+  position: relative;
+  transition: color var(--transition-fast);
+}
+.site-header.is-scrolled .nav-link { color: var(--color-text); }
+.nav-link svg { width: 13px; height: 13px; transition: transform var(--transition-fast); }
+.nav-item:hover .nav-link svg,
+.nav-item.force-open .nav-link svg,
+.nav-link[aria-expanded="true"] svg { transform: rotate(180deg); }
+.nav-link:hover { color: var(--color-signal-400); }
+.site-header.is-scrolled .nav-link:hover { color: var(--color-accent-strong); }
+
+/* Active-state underline: a quiet accent bar, not a heavy pill */
+.nav-link::after {
+  content: ''; position: absolute; left: 0.1rem; right: calc(100% - 0.1rem); bottom: -6px; height: 2px;
+  background: var(--color-signal-400);
+  transition: right var(--transition-normal);
+}
+.nav-link.is-active::after,
+.nav-item:hover .nav-link::after,
+.nav-item:focus-within .nav-link::after { right: 0.1rem; }
+.nav-link.is-active { color: var(--color-signal-400); font-weight: 600; }
+.site-header.is-scrolled .nav-link.is-active { color: var(--color-accent-strong); }
+
+/* MY IQ — the one item that gets distinct branded treatment, not a random button */
+.nav-link--brand {
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: var(--radius-pill);
+  color: var(--color-white);
+  font-weight: 600; letter-spacing: 0.01em;
+}
+.nav-link--brand::after { display: none; }
+.nav-link--brand:hover { border-color: var(--color-signal-400); color: var(--color-signal-400); background: rgba(51,166,214,0.08); }
+.site-header.is-scrolled .nav-link--brand { border-color: var(--color-border); color: var(--color-ink-900); }
+.site-header.is-scrolled .nav-link--brand:hover { border-color: var(--color-signal-600); color: var(--color-signal-600); background: rgba(51,166,214,0.08); }
+
+.mega {
+  position: absolute; top: calc(100% + 18px); left: 50%; transform: translate(-50%, 8px);
+  width: min(600px, 82vw);
+  background: var(--color-white); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg); border: 1px solid var(--color-border);
+  padding: var(--space-lg);
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity var(--transition-normal), transform var(--transition-normal), visibility var(--transition-normal);
+  z-index: var(--z-header);
+}
+/* Invisible hover bridge: the panel floats 18px below the nav link, and
+   that gap is dead space — no element covers it — so moving the mouse
+   straight down from "About Us"/"Offerings" into the panel passes through
+   a zone that belongs to neither .nav-item's own box nor .mega's, breaking
+   :hover along the way and slamming the menu shut before the pointer
+   arrives. This pseudo-element is a descendant of .mega (so it only
+   exists/receives pointer-events once the panel is already open) that
+   exactly fills that 18px gap, keeping the hover chain unbroken while the
+   cursor crosses it. Purely functional — it's transparent, so the visible
+   "floating card" look above is unchanged. */
+.mega::before { content: ''; position: absolute; top: -18px; left: 0; right: 0; height: 18px; }
+.nav-item:hover .mega, .nav-item.force-open .mega {
+  opacity: 1; visibility: visible; pointer-events: auto; transform: translate(-50%, 0);
+}
+.mega-eyebrow { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-mist-500); padding: 0 0.8rem 0.6rem; }
+.mega-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 0.2rem 1rem; }
+.mega-grid--wide { grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: var(--space-sm); }
+.mega-link {
+  display: flex; align-items: flex-start; gap: 0.7rem;
+  padding: 0.75rem 0.8rem; border-radius: var(--radius-md);
+  transition: background var(--transition-fast);
+}
+.mega-link:hover, .mega-link.is-active { background: var(--color-mist-50); }
+.mega-link-icon {
+  flex: none; width: 30px; height: 30px; border-radius: 8px;
+  background: var(--color-signal-500); color: var(--color-white);
+  display: flex; align-items: center; justify-content: center; margin-top: 0.1rem;
+}
+.mega-link-icon svg { width: 15px; height: 15px; }
+.mega-link strong { display: block; font-size: var(--fs-sm); font-weight: 600; color: var(--color-ink-900); }
+.mega-link.is-active strong { color: var(--color-signal-600); }
+/* :not(.mega-link-icon) matters: this is a descendant selector (any span
+   inside .mega-link), which — without the exclusion — also matches the
+   icon span itself and its higher specificity (class + type) was beating
+   .mega-link-icon's own display:flex, collapsing it to display:block and
+   pinning the icon to the top-left corner of its tile instead of centering
+   it. */
+.mega-link span:not(.mega-link-icon) { display: block; margin-top: 0.15rem; font-size: var(--fs-xs); color: var(--color-text-muted); }
+.mega--offerings .mega-link { padding: var(--space-md); }
+.mega--offerings .mega-link-icon { width: 40px; height: 40px; border-radius: 10px; }
+.mega--offerings .mega-link-icon svg { width: 19px; height: 19px; }
+.mega--offerings .mega-link strong { font-size: var(--fs-md); }
+.mega--offerings .mega-link span:not(.mega-link-icon) { margin-top: 0.35rem; font-size: var(--fs-sm); }
+
+.header-actions { display: flex; align-items: center; gap: var(--space-sm); }
+
+.nav-toggle {
+  display: flex; flex-direction: column; justify-content: center; gap: 5px;
+  width: 42px; height: 42px; border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.32); background: rgba(255,255,255,0.06);
+  color: var(--color-white);
+  transition: background var(--transition-normal), border-color var(--transition-normal), color var(--transition-normal);
+}
+.site-header.is-scrolled .nav-toggle { background: var(--color-white); border-color: var(--color-border); color: var(--color-ink-900); }
+.nav-toggle span { width: 18px; height: 2px; background: currentColor; margin-inline: auto; transition: transform var(--transition-fast), opacity var(--transition-fast); }
+@media (min-width: 992px) { .nav-toggle { display: none; } }
+.nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ---------------------------------------------------------------------- */
+/* Homepage header: permanently solid, independent of scroll-state JS     */
+/* ---------------------------------------------------------------------- */
+/* The homepage header is meant to look "scrolled" (solid background, dark
+   text) at all times, including at the very top of the page, before the
+   user has scrolled at all. That used to depend entirely on navigation.js
+   forcing the .is-scrolled class on load — which left a brief window
+   (before that JS ran, or if it was ever delayed) where the header fell
+   back to its default top-of-page state: transparent background with
+   near-white nav text and a white logo chip, both meant to sit on a dark
+   hero image. On the homepage there's no dark hero behind the header, so
+   that default state is white-on-white — invisible nav items and a
+   reappearing logo chip. These rules are unconditional (they don't
+   require .is-scrolled at all) so the homepage header reads correctly
+   from first paint regardless of JS timing. Each selector here matches
+   (or exceeds) the specificity of the .is-scrolled rule it replaces for
+   the homepage and is declared after it in this file, so it wins whether
+   or not .is-scrolled ends up applied too. Interior pages are untouched
+   and keep the original transparent-over-dark-hero overlay header with
+   its JS-driven .is-scrolled transition. */
+.page-home .site-header {
+  position: sticky;
+  height: 84px;
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  border-bottom-color: var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+/* Mobile menu open still gets the dark overlay treatment, same as interior
+   pages — this only needs to win back over the rule above while the menu
+   is open. */
+.page-home .site-header.is-menu-open { background: var(--color-ink-950); border-bottom-color: transparent; }
+
+/* Logo: no backing chip (nothing dark behind it to contrast against), and
+   2x the size it was, per client request. */
+.page-home .site-header .brand-mark { background: none; box-shadow: none; padding: 0; border-radius: 0; }
+.page-home .site-header .brand-mark img { height: 68px; }
+
+.page-home .site-header .nav-link { color: var(--color-text); }
+.page-home .site-header .nav-link:hover { color: var(--color-accent-strong); }
+.page-home .site-header .nav-link.is-active { color: var(--color-accent-strong); }
+.page-home .site-header .nav-link--brand { border-color: var(--color-border); color: var(--color-ink-900); }
+.page-home .site-header .nav-link--brand:hover { border-color: var(--color-signal-600); color: var(--color-signal-600); background: rgba(51,166,214,0.08); }
+.page-home .site-header .nav-toggle { background: var(--color-white); border-color: var(--color-border); color: var(--color-ink-900); }
+
+/* Homepage: the "What we do" section sits directly under the hero
+   carousel, so its usual (up to 144px) top padding read as a big blank
+   gap between the banner and the page content below it. */
+.page-home #capabilities { padding-top: var(--space-lg); }
+
+/* Homepage: "What we do" and "Our Solutions" sit back to back with no page
+   content between them, so their combined bottom+top padding (each up to
+   144px by default) read as one large blank gap. Tightened from both
+   sides; padding elsewhere (e.g. #solutions down to #services) is left at
+   the site's normal section rhythm. */
+.page-home #capabilities { padding-bottom: var(--space-lg); }
+.page-home #solutions { padding-top: var(--space-lg); }
+
+/* Homepage: same logic extended further down the page, per follow-up
+   client feedback that the gaps from "Our Services" on were still too
+   big — tightened from Our Solutions' bottom edge through every section
+   to the end of the homepage (Our Services, Business Value, Case
+   Studies, Nibras Footprint, Video library, Customers, Our story, News,
+   Careers CTA, Final CTA). */
+.page-home #solutions { padding-bottom: var(--space-lg); }
+.page-home #solutions ~ section { padding-block: var(--space-lg); }
+
+/* Company Profile: client flagged too much blank space between every
+   section on this page (same default up-to-144px-per-edge rhythm as
+   everywhere else) — tightened uniformly, same tightened value used on
+   the homepage (Phase 12). */
+.page-company-profile .section { padding-block: var(--space-lg); }
+
+/* CEO Message: same tightened rhythm, same client feedback pattern. */
+.page-ceo-message .section { padding-block: var(--space-lg); }
+
+/* Our Partners: same tightened rhythm, same client feedback pattern. */
+.page-our-partners .section { padding-block: var(--space-lg); }
+
+/* Careers: same tightened rhythm, same client feedback pattern. */
+.page-careers .section { padding-block: var(--space-lg); }
+
+/* Mobile nav */
+.mobile-nav {
+  position: fixed; inset: 0; z-index: var(--z-overlay);
+  background: var(--color-ink-950);
+  color: var(--color-white);
+  padding: 100px var(--gutter) var(--space-xl);
+  overflow-y: auto;
+  transform: translateY(-100%);
+  transition: transform var(--transition-slow);
+}
+.mobile-nav.is-open { transform: translateY(0); }
+@media (min-width: 992px) { .mobile-nav { display: none; } }
+.mobile-nav-close {
+  position: absolute; top: 24px; right: var(--gutter);
+  width: 42px; height: 42px; border-radius: 50%;
+  border: 1px solid var(--color-border-inverse); background: rgba(255,255,255,0.06); color: var(--color-white);
+  display: flex; align-items: center; justify-content: center;
+}
+.mobile-nav-close svg { width: 18px; height: 18px; }
+.mobile-nav-list { display: flex; flex-direction: column; }
+.mobile-nav-list > li { border-bottom: 1px solid var(--color-border-inverse); }
+.mobile-nav-link {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.15rem 0; font-family: var(--font-heading); font-size: var(--fs-lg); font-weight: 600;
+}
+.mobile-nav-link.is-active { color: var(--color-signal-400); }
+.mobile-nav-link .plus {
+  flex: none; width: 26px; height: 26px; position: relative;
+}
+.mobile-nav-link .plus::before, .mobile-nav-link .plus::after {
+  content: ''; position: absolute; background: currentColor; transition: transform var(--transition-normal);
+}
+.mobile-nav-link .plus::before { top: 50%; left: 3px; right: 3px; height: 2px; transform: translateY(-50%); }
+.mobile-nav-link .plus::after { left: 50%; top: 3px; bottom: 3px; width: 2px; transform: translateX(-50%); }
+.mobile-nav-item.is-open .mobile-nav-link .plus::after { transform: translateX(-50%) rotate(90deg); opacity: 0; }
+.mobile-submenu {
+  max-height: 0; overflow: hidden; transition: max-height var(--transition-normal);
+}
+.mobile-nav-item.is-open .mobile-submenu { max-height: 700px; }
+.mobile-submenu li a { display: block; padding: 0.75rem 0 0.75rem 1rem; color: var(--color-mist-300); border-left: 2px solid var(--color-border-inverse); font-size: var(--fs-md); min-height: 44px; }
+.mobile-submenu li a.is-active { color: var(--color-signal-400); border-left-color: var(--color-signal-400); }
+.mobile-nav-cta { margin-top: var(--space-lg); display: flex; flex-direction: column; gap: var(--space-sm); }
+
+/* ---------------------------------------------------------------------- */
+/* Footer                                                                  */
+/* ---------------------------------------------------------------------- */
+.site-footer { background: var(--color-ink-950); color: var(--color-mist-300); }
+.footer-top { padding-block: var(--space-2xl) var(--space-xl); border-bottom: 1px solid var(--color-border-inverse); }
+.footer-grid {
+  display: grid; gap: var(--space-xl);
+  grid-template-columns: minmax(0,1.4fr) repeat(3, minmax(0,1fr));
+}
+@media (max-width: 900px) { .footer-grid { grid-template-columns: minmax(0,1fr) minmax(0,1fr); } }
+@media (max-width: 560px) { .footer-grid { grid-template-columns: minmax(0,1fr); } }
+.footer-brand .brand { color: var(--color-white); margin-bottom: var(--space-sm); }
+.footer-brand p { max-width: 30ch; font-size: var(--fs-sm); }
+/* Footer brand mark: a white-on-transparent wordmark sitting directly on
+   the already-dark footer, so — unlike the header's full-colour mark,
+   which needs the white backing plate in .brand-mark to stay readable
+   over a photo hero — no plate is needed here. */
+.brand-mark--footer { background: none; padding: 0; box-shadow: none; }
+.brand-mark--footer img { height: 26px; }
+.footer-social { display: flex; gap: 0.6rem; margin-top: var(--space-md); }
+.footer-social a {
+  width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--color-border-inverse);
+  display: flex; align-items: center; justify-content: center; transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+.footer-social a:hover { background: var(--color-signal-500); border-color: var(--color-signal-500); color: var(--color-ink-950); }
+.footer-social svg { width: 16px; height: 16px; }
+
+.footer-col h4 { font-family: var(--font-body); font-size: var(--fs-xs); letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-mist-500); margin-bottom: var(--space-sm); }
+.footer-col ul li { margin-bottom: 0.65rem; }
+.footer-col a, .footer-col address { font-size: var(--fs-sm); font-style: normal; }
+.footer-col a:hover { color: var(--color-signal-400); }
+.footer-col address p + p { margin-top: 0.4rem; }
+
+.footer-bottom { padding-block: var(--space-md); display: flex; flex-wrap: wrap; gap: var(--space-sm); align-items: center; justify-content: space-between; font-size: var(--fs-xs); color: var(--color-mist-500); }
+.footer-bottom-links { display: flex; gap: var(--space-md); flex-wrap: wrap; }
+.footer-bottom-links a:hover { color: var(--color-signal-400); }
+
+/* ---------------------------------------------------------------------- */
+/* Cards                                                                   */
+/* ---------------------------------------------------------------------- */
+.card {
+  background: var(--color-white); border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg); padding: var(--space-lg);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
+}
+.card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--color-mist-300); }
+
+.icon-tile {
+  width: 52px; height: 52px; border-radius: var(--radius-md);
+  background: var(--color-ink-900); color: var(--color-signal-400);
+  display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-md);
+}
+.icon-tile svg { width: 24px; height: 24px; }
+
+/* Outline variant — no filled background tile, just a larger currentColor
+   line icon. Used on light sections (e.g. Nibras Footprint) where the
+   dark filled tile from the default .icon-tile would look out of place. */
+.icon-tile--outline {
+  width: 56px; height: 56px; margin: 0 auto var(--space-sm); background: none; color: var(--color-azure-600);
+}
+.icon-tile--outline svg { width: 44px; height: 44px; }
+
+/* Leadership-team avatar monogram — superseded by the real-photo
+   .leader-card below (kept in place, unreferenced, in case a future page
+   still wants an initials badge). */
+.leader-avatar {
+  width: 56px; height: 56px; border-radius: 50%; flex: none;
+  background: var(--color-ink-900); color: var(--color-signal-400);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-heading); font-weight: 700; font-size: var(--fs-md);
+  margin-bottom: var(--space-md);
+}
+
+/* Leadership-team photo card: circular photo overlapping the top edge of
+   a white card, name + role centered below — matches the client's
+   reference mockup. The photo itself already carries a two-tone
+   blue/yellow ring baked into the image (same source photos used in the
+   homepage "Meet the Team" carousel, see the Phase 22 fix removing the
+   duplicate CSS-drawn ring there) so no ring is drawn here either. */
+.leader-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: var(--space-xl) var(--space-md); align-items: start; }
+@media (max-width: 1180px) { .leader-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (max-width: 560px) { .leader-grid { grid-template-columns: minmax(0,1fr); } }
+.leader-card { text-align: center; }
+.leader-card-photo { position: relative; z-index: 1; width: 120px; height: 120px; margin: 0 auto; }
+.leader-card-photo img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
+.leader-card-body {
+  margin-top: -60px;
+  background: var(--color-white); border: 1px solid var(--color-border); border-radius: var(--radius-lg);
+  padding: 76px var(--space-md) var(--space-lg);
+}
+.leader-card-body h3 { font-size: var(--fs-md); font-weight: 700; }
+.leader-card-body p { margin-top: var(--space-xs); color: var(--color-text-muted); font-size: var(--fs-sm); }
+
+/* ---------------------------------------------------------------------- */
+/* Badges / pills / tags                                                  */
+/* ---------------------------------------------------------------------- */
+.tag {
+  display: inline-flex; align-items: center; gap: 0.4em;
+  padding: 0.35em 0.85em; border-radius: var(--radius-pill);
+  font-size: var(--fs-xs); font-weight: 600; letter-spacing: 0.02em;
+  background: var(--color-mist-100); color: var(--color-ink-700);
+}
+.tag--accent { background: rgba(51,166,214,0.12); color: var(--color-signal-600); }
+
+/* ---------------------------------------------------------------------- */
+/* Metric / stat counters                                                 */
+/* ---------------------------------------------------------------------- */
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1px; background: var(--color-border-inverse); border-radius: var(--radius-lg); overflow: hidden; }
+.metric {
+  background: var(--color-ink-900); padding: var(--space-lg);
+}
+.metric-value {
+  display: flex; align-items: baseline; gap: 0.2rem;
+  font-family: var(--font-heading); font-weight: 700;
+  font-size: var(--fs-3xl); color: var(--color-white); line-height: 1;
+}
+.metric-value .unit { font-size: var(--fs-lg); color: var(--color-signal-400); }
+.metric-label { margin-top: var(--space-sm); font-size: var(--fs-sm); color: var(--color-mist-300); max-width: 26ch; }
+
+/* Recognized Business Values stat cards — icon + a count-up percentage
+   (see [data-count] in animations.js, which animates 0 → target once the
+   card scrolls into view) + a caption label, centered. */
+.value-card {
+  padding: var(--space-lg); border-radius: var(--radius-lg);
+  color: var(--color-white);
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.25rem;
+  min-height: 100%;
+}
+.value-card .icon-tile { background: rgba(255,255,255,0.08); color: var(--color-signal-400); margin-bottom: var(--space-xs); }
+.value-number {
+  font-family: var(--font-heading); font-weight: 800;
+  font-size: var(--fs-3xl); color: var(--color-signal-400); line-height: 1;
+}
+.value-label {
+  margin-top: 0.4rem; font-size: var(--fs-sm); font-weight: 600;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--color-mist-300); max-width: 22ch;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Capability / connected-system grid                                     */
+/* ---------------------------------------------------------------------- */
+.capability-shell {
+  display: grid; gap: var(--space-md);
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  position: relative;
+}
+@media (max-width: 900px) { .capability-shell { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (max-width: 560px) { .capability-shell { grid-template-columns: minmax(0,1fr); } }
+
+.capability-node {
+  border: 1px solid var(--color-border); border-radius: var(--radius-lg);
+  padding: var(--space-lg); background: var(--color-white);
+  cursor: default; transition: border-color var(--transition-normal), background var(--transition-normal);
+  position: relative;
+}
+.capability-node::after {
+  content: attr(data-index);
+  position: absolute; top: var(--space-md); right: var(--space-md);
+  font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--color-mist-300);
+}
+.capability-node:hover, .capability-node.is-active {
+  border-color: var(--color-ink-900); background: var(--color-ink-900); color: var(--color-white);
+}
+.capability-node:hover .icon-tile, .capability-node.is-active .icon-tile { background: var(--color-signal-500); color: var(--color-ink-950); }
+.capability-node:hover p, .capability-node.is-active p { color: var(--color-mist-300); }
+.capability-node h3 { font-size: var(--fs-md); margin-bottom: 0.4rem; }
+.capability-node p { color: var(--color-text-muted); font-size: var(--fs-sm); }
+
+/* ---------------------------------------------------------------------- */
+/* Solution / service panels                                              */
+/* ---------------------------------------------------------------------- */
+.panel-list { display: flex; flex-direction: column; border-top: 1px solid var(--color-border); }
+.panel {
+  border-bottom: 1px solid var(--color-border);
+  padding-block: var(--space-lg);
+  display: grid; grid-template-columns: 2.5rem minmax(0,1fr) auto; gap: var(--space-md);
+  align-items: start; cursor: pointer;
+}
+.panel-index { font-family: var(--font-mono); color: var(--color-mist-500); font-size: var(--fs-sm); padding-top: 0.2rem; }
+.panel-title { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); }
+.panel-title h3 { font-size: var(--fs-lg); font-weight: 500; }
+.panel-chevron { width: 20px; height: 20px; flex: none; transition: transform var(--transition-normal); color: var(--color-mist-500); }
+.panel[aria-expanded="true"] .panel-chevron { transform: rotate(45deg); color: var(--color-ink-900); }
+.panel-body { grid-column: 2 / 3; max-height: 0; overflow: hidden; transition: max-height var(--transition-normal); }
+.panel[aria-expanded="true"] .panel-body { max-height: 600px; }
+.panel-body-inner { padding-top: var(--space-sm); max-width: 60ch; color: var(--color-text-muted); }
+.panel-body-inner ul { margin-top: var(--space-sm); }
+.panel-body-inner li { padding-left: 1.2em; position: relative; margin-bottom: 0.5rem; font-size: var(--fs-sm); }
+.panel-body-inner li::before { content: ''; position: absolute; left: 0; top: 0.55em; width: 6px; height: 6px; border-radius: 50%; background: var(--color-signal-500); }
+
+/* ---------------------------------------------------------------------- */
+/* Solution grid cards (homepage)                                         */
+/* ---------------------------------------------------------------------- */
+/* Four cards in a single row on desktop — the container caps out at
+   var(--container-max), so at that width there isn't room for a side-fade
+   photo treatment beside text within each ~1/4-width card; each card uses
+   a top photo strip + text below instead (still white cards on the dark
+   .section--inverse section), stepping down to 2 then 1 per row as cards
+   would otherwise get too narrow to read. */
+.solution-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: var(--space-md); }
+@media (max-width: 1180px) { .solution-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (max-width: 560px) { .solution-grid { grid-template-columns: minmax(0,1fr); } }
+
+/* Three-across variant — used by the Services section so its 3 cards fill
+   the row width edge to edge instead of leaving a gap where a 4th would
+   go. Same card component (.solution-card) as the Solutions grid above. */
+.solution-grid--three { grid-template-columns: repeat(3, minmax(0,1fr)); }
+@media (max-width: 900px) { .solution-grid--three { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (max-width: 560px) { .solution-grid--three { grid-template-columns: minmax(0,1fr); } }
+
+.solution-card {
+  position: relative; overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--color-white); color: var(--color-ink-900);
+  display: flex; flex-direction: column;
+  box-shadow: var(--shadow-md);
+  transition: box-shadow var(--transition-normal), transform var(--transition-normal);
+}
+.solution-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+
+.solution-card-photo { position: relative; aspect-ratio: 16 / 10; overflow: hidden; flex: none; }
+.solution-card-photo img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform var(--transition-slow); }
+.solution-card:hover .solution-card-photo img { transform: scale(1.05); }
+
+.solution-card-text { padding: var(--space-lg); display: flex; flex-direction: column; justify-content: space-between; flex: 1; }
+.solution-card .tag { margin-bottom: var(--space-md); align-self: flex-start; }
+.solution-card h3 { font-size: var(--fs-md); margin-bottom: 0.5rem; }
+.solution-card p { color: var(--color-text-muted); font-size: var(--fs-sm); }
+.solution-card .card-link { margin-top: var(--space-md); display: inline-flex; align-items: center; gap: 0.4em; font-size: var(--fs-sm); font-weight: 600; color: var(--color-accent-strong); }
+.solution-card .card-link svg { width: 16px; height: 16px; transition: transform var(--transition-fast); }
+.solution-card:hover .card-link svg { transform: translateX(4px); }
+
+/* Photo variant — used on the Our Technology (solutions) landing page,
+   where each domain gets a real photo above the same card content. */
+.solution-card--photo { padding: 0; }
+.solution-card-media { position: relative; aspect-ratio: 16 / 10; overflow: hidden; }
+.solution-card-media img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform var(--transition-slow);
+}
+.solution-card--photo:hover .solution-card-media img { transform: scale(1.05); }
+.solution-card-media::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(10,14,26,0) 40%, var(--color-ink-900) 100%);
+}
+.solution-card-body { padding: var(--space-lg); display: flex; flex-direction: column; justify-content: space-between; flex: 1; }
+.solution-card--photo .tag { margin-bottom: var(--space-md); align-self: flex-start; }
+
+/* ---------------------------------------------------------------------- */
+/* Case study cards — restyled to match the client's own "Nibras Case     */
+/* Studies" reference: an inset top photo, a blue heading, truncated      */
+/* body copy taken verbatim from that reference, and a bottom-right       */
+/* "Read more" link. Same 4→2→1 breakpoints as .solution-grid.            */
+/* ---------------------------------------------------------------------- */
+.case-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: var(--space-md); }
+@media (max-width: 1180px) { .case-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (max-width: 560px) { .case-grid { grid-template-columns: minmax(0,1fr); } }
+.case-card {
+  border-radius: var(--radius-lg); overflow: hidden;
+  display: flex; flex-direction: column; background: var(--color-bg-subtle);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-normal), transform var(--transition-normal);
+}
+.case-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+.case-card-photo { position: relative; aspect-ratio: 16 / 10; overflow: hidden; flex: none; }
+.case-card-photo img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform var(--transition-slow); }
+.case-card:hover .case-card-photo img { transform: scale(1.05); }
+.case-card-body { padding: var(--space-md) var(--space-md) var(--space-lg); display: flex; flex-direction: column; gap: var(--space-xs); flex: 1; }
+.case-card-body h3 { font-size: var(--fs-sm); color: var(--color-azure-600); line-height: var(--lh-snug); }
+.case-card-body p { font-size: var(--fs-sm); color: var(--color-text-muted); }
+.case-card-link {
+  margin-top: auto; padding-top: var(--space-sm); align-self: flex-end;
+  font-size: var(--fs-xs); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--color-ink-900);
+}
+/* Icon was never given an explicit size, so a plain browser default (large,
+   ~300x150 native SVG default divided by its 1:1 viewBox) rendered next to
+   the tiny uppercase label — invisible inside a card's normal flow, but
+   revealed as a huge icon (and 3-line-wrapped text) wherever this link is
+   set to display:inline-flex (e.g. the Company Profile CEO section). */
+.case-card-link svg { width: 14px; height: 14px; flex: none; }
+
+/* ---------------------------------------------------------------------- */
+/* News cards                                                             */
+/* ---------------------------------------------------------------------- */
+.news-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: var(--space-md); }
+@media (max-width: 900px) { .news-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (max-width: 560px) { .news-grid { grid-template-columns: minmax(0,1fr); } }
+.news-card { border: 1px solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column; transition: border-color var(--transition-normal), transform var(--transition-normal), box-shadow var(--transition-normal); }
+.news-card:hover { border-color: var(--color-ink-900); transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.news-card-photo { position: relative; aspect-ratio: 2 / 1; overflow: hidden; flex: none; }
+.news-card-photo img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform var(--transition-slow); }
+.news-card:hover .news-card-photo img { transform: scale(1.05); }
+.news-card-body { padding: var(--space-md); display: flex; flex-direction: column; gap: 0.6rem; }
+.news-date { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--color-signal-600); }
+.news-card h3 { font-size: var(--fs-md); }
+.news-card p { font-size: var(--fs-sm); color: var(--color-text-muted); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+
+/* ---------------------------------------------------------------------- */
+/* Timeline                                                                */
+/* ---------------------------------------------------------------------- */
+.timeline { position: relative; margin-top: var(--space-xl); }
+.timeline::before {
+  content: ''; position: absolute; left: 1rem; top: 0; bottom: 0; width: 2px;
+  background: linear-gradient(var(--color-border), var(--color-border) 90%, transparent);
+}
+@media (min-width: 760px) { .timeline::before { left: 50%; } }
+.timeline-item { position: relative; padding-left: 2.75rem; margin-bottom: var(--space-xl); }
+.timeline-item::before {
+  content: ''; position: absolute; left: calc(1rem - 5px); top: 0.3rem; width: 11px; height: 11px; border-radius: 50%;
+  background: var(--color-white); border: 2px solid var(--color-signal-500); z-index: 1;
+}
+.timeline-item::after {
+  content: ''; position: absolute; top: calc(0.3rem + 5.5px); height: 0;
+  left: calc(1rem + 6px); width: calc(1.75rem - 6px);
+  border-top: 2px dotted var(--color-border);
+}
+@media (min-width: 760px) {
+  .timeline-item { width: 46%; padding-left: 0; padding-right: 2.5rem; text-align: right; }
+  .timeline-item::before { left: auto; right: calc(-8.7% - 6px); }
+  .timeline-item::after { left: auto; right: calc(6px - 8.7%); width: calc(8.7% + 2.5rem - 6px); }
+  .timeline-item:nth-child(even) { margin-left: 54%; padding-right: 0; padding-left: 2.5rem; text-align: left; }
+  .timeline-item:nth-child(even)::before { right: auto; left: calc(-8.7% - 6px); }
+  .timeline-item:nth-child(even)::after { right: auto; left: calc(6px - 8.7%); width: calc(8.7% + 2.5rem - 6px); }
+}
+.timeline-year { display: inline-block; margin-bottom: 0.3rem; font-family: var(--font-heading); font-variant-numeric: tabular-nums; color: var(--color-white); font-weight: 600; background: var(--color-signal-500); border-radius: var(--radius-pill); padding: 0.25em 0.9em; }
+.timeline-item h3 { margin-top: 0.35rem; font-size: var(--fs-md); }
+.timeline-item p { margin-top: 0.35rem; color: var(--color-text-muted); font-size: var(--fs-sm); }
+
+/* ---------------------------------------------------------------------- */
+/* Tabs                                                                    */
+/* ---------------------------------------------------------------------- */
+.tabs-nav { display: flex; gap: var(--space-2xs); border-bottom: 1px solid var(--color-border); overflow-x: auto; }
+.tab-btn { padding: 0.9rem 1.2rem; font-size: var(--fs-sm); font-weight: 600; color: var(--color-text-muted); border-bottom: 2px solid transparent; white-space: nowrap; }
+.tab-btn[aria-selected="true"] { color: var(--color-ink-900); border-color: var(--color-signal-500); }
+.tab-panel { padding-top: var(--space-lg); display: none; }
+.tab-panel.is-active { display: block; animation: fadeUp 0.4s ease both; }
+
+/* ---------------------------------------------------------------------- */
+/* Logo wall                                                              */
+/* ---------------------------------------------------------------------- */
+.logo-wall { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1px; background: var(--color-border); border: 1px solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden; }
+.logo-cell { background: var(--color-white); padding: var(--space-md); display: flex; align-items: center; justify-content: center; min-height: 96px; transition: background var(--transition-fast); }
+.logo-cell:hover { background: var(--color-mist-50); }
+.logo-cell .wordmark { font-family: var(--font-heading); font-weight: 600; font-size: var(--fs-sm); color: var(--color-ink-700); letter-spacing: 0.01em; text-align: center; }
+
+.customer-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-md); margin-top: var(--space-lg); }
+.customer-card { border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-md); }
+.customer-card .wordmark { font-family: var(--font-heading); font-weight: 700; font-size: var(--fs-md); }
+
+/* Partner logo grid — the real circular partner badges (same .partner-logo
+   tile used in the homepage carousel), laid out as a static 5-across grid
+   instead of a paged carousel, for a full page dedicated to partners. */
+.partner-grid { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: var(--space-lg) var(--space-md); justify-items: center; margin-top: var(--space-lg); }
+@media (max-width: 1180px) { .partner-grid { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+@media (max-width: 560px) { .partner-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+
+/* ---------------------------------------------------------------------- */
+/* Forms                                                                   */
+/* ---------------------------------------------------------------------- */
+.form-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: var(--space-md); }
+@media (max-width: 640px) { .form-grid { grid-template-columns: minmax(0,1fr); } }
+.field { display: flex; flex-direction: column; gap: 0.4rem; }
+.field--full { grid-column: 1 / -1; }
+.field label { font-size: var(--fs-xs); font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; color: var(--color-text-muted); }
+.field input, .field textarea, .field select {
+  padding: 0.85rem 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-md);
+  background: var(--color-white); font-size: var(--fs-sm); transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.field input:focus, .field textarea:focus, .field select:focus { border-color: var(--color-azure-600); box-shadow: 0 0 0 4px rgba(31,117,153,0.14); }
+.field textarea { resize: vertical; min-height: 130px; }
+.field.has-error input, .field.has-error textarea { border-color: #e0473f; }
+.field-error { font-size: var(--fs-xs); color: #e0473f; min-height: 1em; }
+.form-status { margin-top: var(--space-md); padding: var(--space-md); border-radius: var(--radius-md); font-size: var(--fs-sm); display: none; }
+.form-status.is-success { display: block; background: rgba(51,166,214,0.12); color: var(--color-signal-600); }
+
+/* File upload field — styled wrapper over a transparent, full-size native
+   input[type=file] so keyboard/screen-reader behavior stays native. */
+.file-field { position: relative; }
+.file-field input[type="file"] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.file-field-display {
+  display: flex; align-items: center; gap: 0.65rem;
+  padding: 0.85rem 1rem; border: 1px dashed var(--color-border); border-radius: var(--radius-md);
+  background: var(--color-white); font-size: var(--fs-sm); color: var(--color-text-muted);
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+.file-field-display svg { width: 18px; height: 18px; flex: none; color: var(--color-signal-600); }
+.file-field input[type="file"]:focus + .file-field-display,
+.file-field:hover .file-field-display { border-color: var(--color-azure-600); background: rgba(31,117,153,0.04); }
+.file-field.has-file .file-field-display { border-style: solid; border-color: var(--color-signal-600); }
+.file-field.has-file .file-field-name { color: var(--color-ink-900); font-weight: 600; }
+.field.has-error .file-field-display { border-color: #e0473f; }
+
+/* Success modal — reuses the .video-modal fixed-overlay pattern. */
+.form-success-modal { position: fixed; inset: 0; z-index: var(--z-modal); display: flex; align-items: center; justify-content: center; padding: var(--space-md); }
+.form-success-modal[hidden] { display: none; }
+.form-success-backdrop { position: absolute; inset: 0; background: rgba(5,7,13,0.6); }
+.form-success-panel {
+  position: relative; width: 100%; max-width: 420px; text-align: center;
+  background: var(--color-white); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+  padding: var(--space-xl) var(--space-lg); animation: form-success-pop 0.3s ease;
+}
+.form-success-icon {
+  display: flex; align-items: center; justify-content: center; width: 60px; height: 60px; margin: 0 auto var(--space-md);
+  border-radius: 50%; background: linear-gradient(135deg, var(--color-signal-500), var(--color-signal-600)); color: var(--color-white);
+}
+.form-success-icon svg { width: 30px; height: 30px; }
+.form-success-panel h3 { font-size: var(--fs-xl); color: var(--color-ink-900); }
+.form-success-panel p { margin-top: var(--space-sm); color: var(--color-text-muted); font-size: var(--fs-sm); }
+.form-success-close { margin-top: var(--space-lg); }
+@keyframes form-success-pop { from { opacity: 0; transform: scale(0.94) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+.form-status.is-error { display: block; background: rgba(224,71,63,0.1); color: #c0342c; }
+
+/* ---------------------------------------------------------------------- */
+/* CTA band                                                                */
+/* ---------------------------------------------------------------------- */
+.cta-band {
+  border-radius: var(--radius-lg);
+  background: var(--color-ink-950); color: var(--color-white);
+  padding: clamp(2.5rem, 2rem + 3vw, 5rem);
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-xl);
+  position: relative; overflow: hidden;
+}
+@media (max-width: 760px) { .cta-band { flex-direction: column; text-align: center; } }
+.cta-band h2 { font-size: var(--fs-xl); max-width: 20ch; }
+.cta-band p { color: var(--color-mist-300); margin-top: 0.6rem; max-width: 40ch; }
+
+/* Background photo on the right, faded in from solid black on the left —
+   same gradient-scrim pattern as .hero-slide-scrim/.solutions-bg-scrim
+   elsewhere on the page. The two content children (text block + button)
+   get z-index:1 so they stay above this layer. */
+.cta-band-bg { position: absolute; inset: 0; z-index: 0; }
+.cta-band-bg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: right center; }
+.cta-band-scrim {
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg,
+    var(--color-ink-950) 0%, var(--color-ink-950) 32%,
+    rgba(5,7,13,0.6) 50%, rgba(5,7,13,0.15) 72%, rgba(5,7,13,0) 100%);
+}
+.cta-band > div:not(.cta-band-bg), .cta-band > a { position: relative; z-index: 1; }
+@media (max-width: 760px) {
+  /* Content stacks and centers on narrow screens, so a left-to-right fade
+     no longer lines up with the text — switch to top-to-bottom instead. */
+  .cta-band-scrim {
+    background: linear-gradient(180deg,
+      var(--color-ink-950) 0%, var(--color-ink-950) 42%,
+      rgba(5,7,13,0.6) 62%, rgba(5,7,13,0.2) 100%);
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Hero carousel (homepage)                                               */
+/* Full-bleed autoplaying image carousel with pagination dots. Height is  */
+/* pinned to 57.6vh (48vh + 1/5), clamped so it never gets                */
+/* unreasonably short or tall. Crossfade is driven by carousel.js         */
+/* toggling .is-active; dot color/typography stay on the site's existing */
+/* teal accent rather than copying a reference mockup's gold literally.  */
+/* ---------------------------------------------------------------------- */
+.hero-carousel { position: relative; height: 57.6vh; min-height: 490px; max-height: 893px; overflow: hidden; background: var(--color-ink-950); }
+.hero-slides { position: relative; width: 100%; height: 100%; }
+.hero-slide { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: opacity 1.1s ease; }
+.hero-slide.is-active { opacity: 1; visibility: visible; z-index: 1; }
+.hero-slide-media { position: absolute; inset: 0; background-size: cover; background-position: center; background-color: var(--color-ink-950); }
+.hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; background: var(--color-ink-950); }
+.hero-slide-scrim {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(100deg, rgba(5,7,13,0.6) 0%, rgba(5,7,13,0.32) 40%, rgba(5,7,13,0.08) 62%),
+    linear-gradient(0deg, rgba(5,7,13,0.55) 0%, rgba(5,7,13,0.05) 35%, rgba(5,7,13,0.2) 100%);
+}
+/* Centering happens inside this box, not the .hero-slide it sits in — the
+   header now sits in its own row above the carousel (see .page-home rules)
+   rather than overlaying it, so only a small top padding is needed here;
+   the bottom padding carves out a safe zone for the pagination dots so a
+   longer/wrapped headline centers within what's left rather than crowding
+   them. */
+.hero-slide-inner { position: relative; z-index: 1; width: 100%; height: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: flex-end; padding-top: var(--space-md); padding-bottom: 48px; }
+/* Per-slide text alignment: banners 1 and 3 pin the panel left, 2 and 4 keep
+   the default right placement — set via this modifier on .hero-slide-inner. */
+.hero-slide-inner--left { justify-content: flex-start; }
+.hero-slide-panel { position: relative; background: rgba(5,7,13,0.68); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); padding: var(--space-md) var(--space-lg); border-left: 6px solid var(--color-signal-400); max-width: 40ch; }
+.hero-slide-panel h2 { color: var(--color-white); font-size: var(--fs-xl); line-height: 1.25; font-weight: 700; }
+.hero-panel-bracket { position: absolute; width: 22px; height: 22px; border: 2px solid var(--color-signal-400); pointer-events: none; }
+.hero-panel-bracket--tl { top: -8px; left: -8px; border-right: none; border-bottom: none; }
+.hero-panel-bracket--br { bottom: -8px; right: -8px; border-left: none; border-top: none; }
+
+.hero-dots { position: absolute; left: 0; right: 0; bottom: var(--space-md); z-index: 2; display: flex; justify-content: center; gap: 0.6rem; }
+.hero-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.4); border: none; padding: 0; cursor: pointer; transition: background var(--transition-fast), transform var(--transition-fast); }
+.hero-dot:hover { background: rgba(255,255,255,0.7); }
+.hero-dot.is-active { background: var(--color-signal-400); transform: scale(1.3); }
+.hero-dot:focus-visible { outline: 2px solid var(--color-signal-400); outline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) { .hero-slide { transition: none; } }
+
+@media (max-width: 900px) { .hero-slide-panel { max-width: 46ch; } }
+
+/* ---------------------------------------------------------------------- */
+/* Solutions section background video (homepage "Our Solutions")          */
+/* A looping muted video sits behind the dark section, partly covered by  */
+/* a scrim so the left side (where the eyebrow/heading/cards start) stays */
+/* readable solid black and the right side fades in to reveal the video   */
+/* underneath. Loaded lazily by solutions-bg-video.js — preload="none"    */
+/* plus a poster frame keep this off the homepage's initial page weight   */
+/* until the section is actually about to scroll into view.               */
+/* ---------------------------------------------------------------------- */
+.solutions-section { position: relative; overflow: hidden; }
+.solutions-bg { position: absolute; inset: 0; z-index: 0; }
+.solutions-bg-video {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: center; display: block;
+  background: var(--color-ink-900);
+}
+.solutions-bg-scrim {
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg,
+    var(--color-ink-900) 0%, var(--color-ink-900) 40%,
+    rgba(10,15,28,0.55) 60%, rgba(10,15,28,0.15) 100%);
+}
+.solutions-section .container { position: relative; z-index: 1; }
+
+@media (max-width: 700px) {
+  /* Narrow viewports stack the section head above the cards with little
+     horizontal room either way, so the left-to-right fade reads as an
+     uneven wash rather than a deliberate split — a flatter top-to-bottom
+     fade keeps the same "half black, half video" feel at that width. */
+  .solutions-bg-scrim {
+    background: linear-gradient(180deg,
+      var(--color-ink-900) 0%, var(--color-ink-900) 38%,
+      rgba(10,15,28,0.55) 58%, rgba(10,15,28,0.2) 100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) { .solutions-bg-video { display: none; } }
+@media (max-width: 640px) {
+  .hero-carousel { min-height: 432px; }
+  .hero-slide-inner { justify-content: center; padding-inline: var(--space-lg); }
+  .hero-slide-panel { max-width: 92%; text-align: center; padding: var(--space-sm) var(--space-md); }
+  .hero-slide-panel h2 { font-size: var(--fs-lg); }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Nibras orbit (homepage "What we do")                                   */
+/* Six capability nodes arranged in a ring around the Nibras mark, one     */
+/* highlighted at a time (orbit.js, every 3s) with its description shown  */
+/* below. Nodes are real <button>s (clickable/keyboard-operable, like the  */
+/* carousel's dots) so the auto-cycle is never the only way to reach any   */
+/* item. Falls back to a plain two-column list below 640px — a ring that   */
+/* small stops being legible, and the brief explicitly allows dropping the */
+/* circle shape as long as the Nibras association is kept some other way   */
+/* (the center mark here, or the shared card styling in list mode).       */
+/* ---------------------------------------------------------------------- */
+.orbit-layout { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,480px); gap: var(--space-2xl); align-items: center; }
+.orbit-heading { margin-top: var(--space-sm); font-size: var(--fs-2xl); font-weight: 800; text-transform: uppercase; letter-spacing: 0.01em; color: var(--color-azure-600); }
+.orbit-sub { margin-top: var(--space-md); font-size: var(--fs-md); color: var(--color-text-muted); max-width: 34ch; }
+
+.orbit-diagram { display: flex; flex-direction: column; align-items: center; gap: var(--space-lg); }
+
+.orbit-ring { position: relative; flex: none; width: 440px; height: 440px; border-radius: 50%; border: 1px dashed var(--color-border); }
+
+.orbit-center {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 176px; height: 176px; border-radius: 50%;
+  background: var(--color-white); box-shadow: var(--shadow-lg);
+  display: flex; align-items: center; justify-content: center;
+  padding: var(--space-md);
+  z-index: 1;
+}
+.orbit-center img { width: 100%; height: auto; display: block; }
+
+.orbit-node {
+  position: absolute; top: 50%; left: 50%;
+  width: 118px; height: 118px; margin: -59px 0 0 -59px;
+  transform: rotate(var(--angle)) translate(190px) rotate(calc(-1 * var(--angle)));
+  border-radius: 50%;
+  background: var(--color-white); border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.35rem;
+  padding: 0.5rem;
+  color: var(--color-ink-900);
+  cursor: pointer;
+  transition: background var(--transition-normal), color var(--transition-normal), box-shadow var(--transition-normal), transform var(--transition-normal), border-color var(--transition-normal);
+  z-index: 2;
+}
+.orbit-node-icon { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; color: var(--color-azure-600); transition: color var(--transition-normal); }
+.orbit-node-icon svg { width: 20px; height: 20px; }
+.orbit-node-label { font-size: 12px; font-weight: 600; line-height: 1.25; text-align: center; max-width: 88px; }
+
+.orbit-node:hover { box-shadow: var(--shadow-lg); }
+.orbit-node:focus-visible { outline: 2px solid var(--color-signal-500); outline-offset: 3px; }
+.orbit-node.is-active {
+  background: var(--color-nibras-gold);
+  border-color: transparent;
+  box-shadow: var(--shadow-glow), var(--shadow-lg);
+  transform: rotate(var(--angle)) translate(190px) rotate(calc(-1 * var(--angle))) scale(1.12);
+}
+.orbit-node.is-active .orbit-node-icon,
+.orbit-node.is-active .orbit-node-label { color: var(--color-ink-950); }
+
+.orbit-desc-panel { max-width: 46ch; min-height: 5.5em; text-align: center; }
+.orbit-desc-title { font-size: var(--fs-md); font-weight: 700; color: var(--color-ink-900); }
+.orbit-desc-text { margin-top: 0.4rem; font-size: var(--fs-sm); color: var(--color-text-muted); }
+
+@media (max-width: 1180px) {
+  .orbit-ring { width: 380px; height: 380px; }
+  .orbit-center { width: 148px; height: 148px; }
+  .orbit-node { width: 104px; height: 104px; margin: -52px 0 0 -52px; transform: rotate(var(--angle)) translate(160px) rotate(calc(-1 * var(--angle))); }
+  .orbit-node.is-active { transform: rotate(var(--angle)) translate(160px) rotate(calc(-1 * var(--angle))) scale(1.12); }
+}
+
+@media (max-width: 980px) {
+  .orbit-layout { grid-template-columns: minmax(0,1fr); justify-items: center; text-align: center; }
+  .orbit-sub { margin-inline: auto; }
+}
+
+@media (max-width: 640px) {
+  .orbit-ring { width: auto; height: auto; border: none; display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: var(--space-sm); }
+  .orbit-center { display: none; }
+  .orbit-node {
+    position: static; width: auto; height: auto; margin: 0;
+    transform: none !important;
+    flex-direction: row; justify-content: flex-start; gap: 0.6rem;
+    padding: 0.75rem; text-align: left; border-radius: var(--radius-md);
+  }
+  .orbit-node-label { max-width: none; text-align: left; }
+}
+
+@media (prefers-reduced-motion: reduce) { .orbit-node { transition: none; } }
+
+/* ---------------------------------------------------------------------- */
+/* Split (two-column editorial layout, reused across pages)               */
+/* ---------------------------------------------------------------------- */
+.split { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: var(--space-2xl); align-items: center; }
+/* 70/30 variant — text-led with a smaller supporting image; still stacks
+   to a single column at the same ≤1024px breakpoint as .split (see
+   responsive.css, which overrides .split's grid-template-columns and
+   therefore this too, since it loads after this file). */
+.split--70-30 { grid-template-columns: minmax(0,7fr) minmax(0,3fr); align-items: start; }
+.split-visual { position: relative; }
+.split-visual svg { width: 100%; height: auto; }
+
+/* ---------------------------------------------------------------------- */
+/* Footprint stat grid — centered mark + heading above a 3x2 grid of      */
+/* icon / count-up number / two-line caption, matching the client's own  */
+/* "Nibras Footprint" reference screenshot (light background).            */
+/* ---------------------------------------------------------------------- */
+.footprint-stat-grid {
+  display: grid; grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: var(--space-xl) var(--space-lg); margin-top: var(--space-lg);
+}
+@media (max-width: 760px) { .footprint-stat-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (max-width: 480px) { .footprint-stat-grid { grid-template-columns: minmax(0,1fr); } }
+.footprint-stat-card { text-align: center; }
+.footprint-stat-number {
+  font-family: var(--font-heading); font-weight: 800;
+  font-size: var(--fs-2xl); color: var(--color-ink-900); line-height: 1;
+  margin-top: var(--space-sm);
+}
+.footprint-stat-label {
+  margin-top: 0.5rem; font-size: var(--fs-sm); font-weight: 600;
+  letter-spacing: 0.03em; text-transform: uppercase; line-height: 1.5;
+  color: var(--color-text-muted);
+}
+/* Dark-section variant (Nibras Footprint runs on section--inverse) — swap
+   the icon/number/label colors for contrast against the dark background,
+   matching the accent treatment used elsewhere on dark sections. */
+.section--inverse .icon-tile--outline { color: var(--color-signal-400); }
+.section--inverse .footprint-stat-number { color: var(--color-white); }
+.section--inverse .footprint-stat-label { color: var(--color-mist-300); }
+
+/* ---------------------------------------------------------------------- */
+/* Value props (qualitative business-value pillars, no invented %)         */
+/* ---------------------------------------------------------------------- */
+.value-props-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: var(--space-md); }
+
+/* ---------------------------------------------------------------------- */
+/* Services sticky scrollspy layout — "Our Services" page: all three       */
+/* .service-block sections stack and scroll normally; the sidebar          */
+/* (service-tabs.js) stays put and highlights whichever section is        */
+/* currently in view, and clicking a link smooth-scrolls to its section.  */
+/* ---------------------------------------------------------------------- */
+.services-layout { display: grid; grid-template-columns: 300px minmax(0,1fr); gap: var(--space-xl); align-items: start; }
+.services-nav { position: sticky; top: 110px; display: flex; flex-direction: column; gap: var(--space-sm); }
+.services-nav a {
+  display: flex; flex-direction: row; align-items: center; gap: var(--space-sm);
+  width: 100%; text-align: left; padding: 0.75rem var(--space-md); border-radius: var(--radius-md);
+  background: var(--color-signal-500); cursor: pointer; text-decoration: none;
+  transition: background var(--transition-fast), box-shadow var(--transition-fast);
+}
+.services-nav a:hover { background: var(--color-signal-600); }
+.services-nav-icon {
+  display: flex; align-items: center; justify-content: center; flex: none;
+  width: 40px; height: 40px; border-radius: var(--radius-sm); background: rgba(255,255,255,0.14);
+  color: var(--color-white);
+}
+/* Icons render as 50%-transparent white by default on every nav item —
+   only the icon "lights up" to full opacity on whichever service is
+   currently in view, so the sidebar itself doubles as a scroll progress
+   indicator. (color, not stroke: the inline <svg> paths use
+   stroke="currentColor", which follows the CSS `color` property.) */
+.services-nav-icon svg { width: 20px; height: 20px; opacity: 0.5; transition: opacity var(--transition-fast); }
+.services-nav-label { font-size: var(--fs-sm); font-weight: 600; color: var(--color-white); line-height: var(--lh-snug); }
+.services-nav a.is-active { background: var(--color-signal-600); box-shadow: var(--shadow-md); }
+.services-nav a.is-active .services-nav-icon svg { opacity: 1; }
+.service-block { padding-bottom: var(--space-lg); border-bottom: 1px solid var(--color-border); margin-bottom: var(--space-xl); scroll-margin-top: 110px; }
+.service-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.feature-list { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: var(--space-sm) var(--space-lg); margin-top: var(--space-md); }
+@media (max-width: 640px) { .feature-list { grid-template-columns: minmax(0,1fr); } }
+.feature-list li { padding-left: 1.4em; position: relative; font-size: var(--fs-sm); color: var(--color-text-muted); }
+.feature-list li::before { content: ''; position: absolute; left: 0; top: 0.5em; width: 7px; height: 7px; border-radius: 2px; background: var(--color-signal-500); transform: rotate(45deg); }
+
+/* Content figure — client-supplied image embedded inline within a
+   .service-block (or similar long-form content area), with an optional
+   caption underneath. */
+.content-figure { margin-top: var(--space-lg); }
+.content-figure img { width: 100%; height: auto; display: block; border-radius: var(--radius-lg); border: 1px solid var(--color-border); box-shadow: var(--shadow-md); }
+.content-figure figcaption { margin-top: var(--space-sm); text-align: center; font-family: var(--font-mono); font-size: var(--fs-xs); letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-mist-500); }
+
+/* Tag image row — a strip of client-supplied label/tag graphics (e.g. a
+   case study's "Tags" section), shown at their native size rather than
+   stretched full-width like .content-figure. */
+.tag-image-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-sm); margin-top: var(--space-md); }
+.tag-image-row img { height: 32px; width: auto; display: block; }
+
+/* Comparison table — engagement-model / capability matrix (e.g.
+   Productization Services). Six columns are wider than most viewports, so
+   the wrapper scrolls horizontally on narrow screens rather than squeezing
+   the table illegibly; the table itself keeps a fixed minimum width so
+   cells never collapse. */
+.compare-table-wrap { overflow-x: auto; border-radius: var(--radius-lg); border: 1px solid var(--color-border); box-shadow: var(--shadow-md); }
+.compare-table { width: 100%; min-width: 760px; border-collapse: collapse; background: var(--color-white); }
+.compare-table th, .compare-table td { padding: var(--space-sm) var(--space-md); text-align: left; }
+.compare-table thead th { background: var(--color-signal-500); color: var(--color-white); font-family: var(--font-mono); font-size: var(--fs-xs); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1.3; vertical-align: middle; }
+.compare-table thead th:first-child { border-top-left-radius: var(--radius-lg); }
+.compare-table thead th:last-child { border-top-right-radius: var(--radius-lg); }
+.compare-table tbody th, .compare-table tbody td { font-size: var(--fs-sm); border-bottom: 1px solid var(--color-border); }
+.compare-table tbody tr:last-child th, .compare-table tbody tr:last-child td { border-bottom: none; }
+.compare-table tbody tr:nth-child(even) { background: var(--color-mist-50); }
+.compare-table tbody td:first-child { font-weight: 600; color: var(--color-ink-900); white-space: nowrap; }
+.compare-table td:not(:first-child) { text-align: center; }
+.status-icon { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; color: var(--color-white); font-size: var(--fs-xs); font-weight: 700; line-height: 1; }
+.status-icon--yes { background: var(--color-success-500); }
+.status-icon--no { background: var(--color-danger-500); }
+.status-icon--maybe { background: var(--color-signal-500); }
+
+/* Technology switcher — the Our Technology page's two-level nav: a top row
+   of 4 domain tabs (Wells / Reservoirs / Facilities / Asset Management),
+   each revealing a sidebar list of that domain's modules next to all of
+   that domain's module content stacked one below another (not swapped) —
+   as the reader scrolls past each module, its sidebar entry auto-highlights
+   (scrollspy), and clicking a sidebar entry smooth-scrolls to it. Same
+   pattern as the sticky, always-visible-content sidebar already used on
+   the individual solution pages (wells-management.html and siblings),
+   plus scroll-driven highlighting. All switching/scrollspy is JS-driven
+   (assets/js/tech-switcher.js); the top domain tabs and the first module
+   of each domain default to active in the markup itself, so the page
+   still shows real content with JS disabled. */
+.tech-tabs { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: var(--space-sm); }
+.tech-tab { display: flex; flex-direction: column; align-items: center; gap: var(--space-sm); padding: var(--space-lg) var(--space-sm); background: var(--color-mist-100); border-radius: var(--radius-md); border: none; position: relative; transition: background var(--transition-fast); }
+.tech-tab:hover { background: var(--color-mist-200); }
+.tech-tab-icon { color: var(--color-ink-700); }
+.tech-tab-icon svg { width: 30px; height: 30px; }
+.tech-tab-label { font-family: var(--font-mono); font-size: var(--fs-xs); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--color-ink-800); }
+.tech-tab.is-active { background: var(--color-ink-800); }
+.tech-tab.is-active:hover { background: var(--color-ink-800); }
+.tech-tab.is-active .tech-tab-icon { color: var(--color-white); }
+.tech-tab.is-active .tech-tab-label { color: var(--color-white); }
+.tech-tab.is-active::after { content: ''; position: absolute; left: 50%; bottom: -8px; transform: translateX(-50%); width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 8px solid var(--color-ink-800); }
+
+.tech-panel { display: none; margin-top: var(--space-xl); }
+.tech-panel.is-active { display: block; }
+.tech-panel-layout { display: grid; grid-template-columns: 280px minmax(0,1fr); gap: var(--space-xl); align-items: start; }
+.tech-panel-nav { position: sticky; top: 110px; }
+.tech-panel-nav h3 { font-size: var(--fs-lg); }
+.tech-module-list { margin-top: var(--space-md); display: flex; flex-direction: column; gap: var(--space-xs); }
+.tech-module { display: flex; align-items: center; gap: var(--space-sm); padding: var(--space-sm) var(--space-md); background: var(--color-signal-500); color: var(--color-white); border: none; border-radius: var(--radius-md); text-align: left; transition: background var(--transition-fast); }
+.tech-module:hover { background: var(--color-signal-600); }
+.tech-module-icon { flex: none; color: var(--color-white); }
+.tech-module-icon svg { width: 18px; height: 18px; }
+.tech-module-label { font-size: var(--fs-sm); font-weight: 600; line-height: var(--lh-snug); }
+.tech-module.is-active { background: var(--color-amber-500); }
+.tech-module.is-active:hover { background: var(--color-amber-500); }
+.tech-module.is-active .tech-module-icon,
+.tech-module.is-active .tech-module-label { color: var(--color-ink-900); }
+.tech-module-detail { scroll-margin-top: 110px; padding-bottom: var(--space-lg); margin-bottom: var(--space-lg); border-bottom: 1px solid var(--color-border); }
+.tech-module-detail:last-child { padding-bottom: 0; margin-bottom: 0; border-bottom: none; }
+.tech-module-detail h3 { font-size: var(--fs-xl); color: var(--color-signal-600); }
+.tech-module-detail p { margin-top: var(--space-sm); color: var(--color-text-muted); max-width: none; }
+.tech-module-detail .tech-module-tagline { margin-top: var(--space-xs); font-family: var(--font-heading); font-size: var(--fs-md); color: var(--color-ink-900); max-width: none; }
+.tech-module-detail h4 { margin-top: var(--space-lg); font-size: var(--fs-sm); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--color-mist-500); }
+.tech-module-detail .tech-note { margin-top: var(--space-sm); font-size: var(--fs-xs); font-style: italic; color: var(--color-mist-500); max-width: none; }
+.tech-module-detail .content-figure { margin-top: var(--space-md); max-width: none; }
+.tech-module-detail .feature-list { margin-top: var(--space-md); }
+.tech-panel-more { margin-top: var(--space-lg); }
+.tech-panel-more .card-link { display: inline-flex; align-items: center; gap: 0.4em; font-size: var(--fs-sm); font-weight: 600; color: var(--color-accent-strong); }
+.tech-panel-more .card-link svg { width: 16px; height: 16px; transition: transform var(--transition-fast); }
+.tech-panel-more .card-link:hover svg { transform: translateX(4px); }
+
+/* Service sub-navigation — lets a reader jump from inside one service's
+   content straight to the other services, or back to the top of the page,
+   without hunting for the summary cards above. Repeated at the end of each
+   .service-block. */
+.service-subnav { margin-top: var(--space-lg); padding: var(--space-md) var(--space-lg); background: var(--color-mist-50); border: 1px solid var(--color-border); border-radius: var(--radius-lg); display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-sm) var(--space-lg); }
+.service-subnav-label { font-family: var(--font-mono); font-size: var(--fs-xs); letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-mist-500); }
+.service-subnav-links { display: flex; flex-wrap: wrap; gap: var(--space-sm); margin-left: auto; }
+.service-subnav-links a { display: inline-flex; align-items: center; gap: 0.4em; font-size: var(--fs-sm); font-weight: 600; color: var(--color-ink-900); padding: 0.5em 0.9em; border-radius: var(--radius-pill); background: var(--color-white); border: 1px solid var(--color-border); transition: border-color var(--transition-fast), color var(--transition-fast), background var(--transition-fast); }
+.service-subnav-links a svg { width: 14px; height: 14px; flex: none; }
+.service-subnav-links a:hover { border-color: var(--color-signal-500); color: var(--color-signal-600); }
+.service-subnav-links a.service-subnav-top { background: var(--color-ink-900); color: var(--color-white); border-color: var(--color-ink-900); }
+.service-subnav-links a.service-subnav-top:hover { background: var(--color-ink-800); color: var(--color-signal-400); }
+@media (max-width: 640px) { .service-subnav { flex-direction: column; align-items: flex-start; } .service-subnav-links { margin-left: 0; width: 100%; } }
+
+/* Anchor target for "back to top" links from within service content. */
+#main-content { scroll-margin-top: 96px; }
+
+/* ---------------------------------------------------------------------- */
+/* Breadcrumb / page header                                                */
+/* ---------------------------------------------------------------------- */
+.page-header { padding-top: calc(84px + var(--space-2xl)); padding-bottom: var(--space-xl); background: var(--color-ink-950); color: var(--color-white); position: relative; overflow: hidden; isolation: isolate; }
+.breadcrumb { display: flex; gap: 0.5em; align-items: center; font-size: var(--fs-xs); color: var(--color-mist-500); margin-bottom: var(--space-md); }
+.breadcrumb a:hover { color: var(--color-signal-400); }
+.page-header h1 { font-size: var(--fs-3xl); max-width: 22ch; }
+.page-header .lede { margin-top: var(--space-md); font-size: var(--fs-md); color: var(--color-mist-300); max-width: 55ch; }
+
+/* Optional photo behind a page-header: sits under the grid pattern and
+   text, faded into the same var(--color-ink-950) the banner already uses
+   so it reads as "background", not a hard-edged photo. */
+.page-header-photo { position: absolute; inset: 0; z-index: -1; opacity: 0.62; }
+.page-header-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 55%; filter: saturate(0.85); }
+.page-header-photo::after {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(180deg, rgba(5,7,13,0.25) 0%, rgba(5,7,13,0.2) 40%, var(--color-ink-950) 100%),
+    linear-gradient(90deg, var(--color-ink-950) 0%, rgba(5,7,13,0.05) 25%, rgba(5,7,13,0.05) 75%, var(--color-ink-950) 100%);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Accordion (careers / FAQ style)                                        */
+/* ---------------------------------------------------------------------- */
+.accordion-item { border-bottom: 1px solid var(--color-border); }
+.accordion-trigger { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: var(--space-md) 0; text-align: left; font-family: var(--font-heading); font-size: var(--fs-md); font-weight: 600; background: transparent; border: none; }
+.accordion-trigger svg { width: 18px; height: 18px; flex: none; transition: transform var(--transition-normal); }
+.accordion-item[data-open="true"] .accordion-trigger svg { transform: rotate(45deg); }
+.accordion-panel { max-height: 0; overflow: hidden; transition: max-height var(--transition-normal); }
+.accordion-item[data-open="true"] .accordion-panel { max-height: 400px; }
+.accordion-panel-inner { padding-bottom: var(--space-md); color: var(--color-text-muted); font-size: var(--fs-sm); max-width: 60ch; }
+
+/* ---------------------------------------------------------------------- */
+/* Progress rail (used in hero, back to top)                              */
+/* ---------------------------------------------------------------------- */
+.back-to-top {
+  position: fixed; right: var(--space-md); bottom: var(--space-md); z-index: var(--z-overlay);
+  width: 46px; height: 46px; border-radius: 50%; background: var(--color-ink-900); color: var(--color-white);
+  display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-md);
+  opacity: 0; visibility: hidden; transform: translateY(10px);
+  transition: opacity var(--transition-normal), transform var(--transition-normal), visibility var(--transition-normal);
+}
+.back-to-top.is-visible { opacity: 1; visibility: visible; transform: translateY(0); }
+.back-to-top svg { width: 18px; height: 18px; }
+
+/* ---------------------------------------------------------------------- */
+/* Video library (homepage "Video and Photos Library")                    */
+/* ---------------------------------------------------------------------- */
+.video-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: var(--space-md); }
+@media (max-width: 860px) { .video-grid { grid-template-columns: minmax(0,1fr); } }
+.video-card {
+  display: flex; flex-direction: column; gap: var(--space-sm);
+  background: transparent; border: none; padding: 0; text-align: left; font: inherit; color: inherit;
+}
+.video-card-thumb {
+  position: relative; display: block; aspect-ratio: 16 / 9; border-radius: var(--radius-lg);
+  overflow: hidden; box-shadow: var(--shadow-md);
+}
+.video-card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform var(--transition-slow); }
+.video-card:hover .video-card-thumb img { transform: scale(1.05); }
+.video-card-thumb::after { content: ''; position: absolute; inset: 0; background: rgba(5,7,13,0.15); transition: background var(--transition-normal); }
+.video-card:hover .video-card-thumb::after { background: rgba(5,7,13,0.3); }
+.video-play {
+  position: absolute; inset: 0; margin: auto; width: 60px; height: 60px; border-radius: 50%;
+  background: rgba(255,255,255,0.92); color: var(--color-ink-950);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform var(--transition-fast), background var(--transition-fast);
+}
+.video-card:hover .video-play { transform: scale(1.08); background: var(--color-white); }
+.video-play svg { width: 22px; height: 22px; margin-left: 3px; }
+.video-card-title { font-size: var(--fs-sm); font-weight: 600; color: var(--color-ink-900); line-height: var(--lh-snug); }
+
+.video-modal {
+  position: fixed; inset: 0; z-index: var(--z-modal);
+  display: flex; align-items: center; justify-content: center; padding: var(--space-md);
+}
+.video-modal[hidden] { display: none; }
+.video-modal-backdrop { position: absolute; inset: 0; background: rgba(5,7,13,0.86); }
+.video-modal-panel {
+  position: relative; width: 100%; max-width: 960px;
+}
+.video-modal-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: var(--radius-md); overflow: hidden; background: var(--color-ink-950); box-shadow: var(--shadow-lg); }
+.video-modal-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.video-modal-close {
+  position: absolute; right: 0; top: -48px; width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(255,255,255,0.1); color: var(--color-white); border: 1px solid rgba(255,255,255,0.24);
+  display: flex; align-items: center; justify-content: center; transition: background var(--transition-fast);
+}
+.video-modal-close:hover { background: rgba(255,255,255,0.22); }
+.video-modal-close svg { width: 18px; height: 18px; }
+@media (max-width: 640px) { .video-modal-close { top: -44px; right: 0; } }
+
+/* ---------------------------------------------------------------------- */
+/* Testimonial slider (homepage "Our Customers") — one slide visible at a */
+/* time (display toggled by testimonial-slider.js, not a sliding track),  */
+/* advanced manually via the flanking arrows or the dots below.           */
+/* ---------------------------------------------------------------------- */
+.testimonial-slider { display: flex; align-items: center; gap: var(--space-md); }
+.testimonial-viewport { flex: 1; min-width: 0; }
+.testimonial-slide { display: none; }
+.testimonial-slide.is-active { display: block; animation: testimonial-fade-in 0.35s ease; }
+@keyframes testimonial-fade-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .testimonial-slide.is-active { animation: none; } }
+
+.testimonial-card {
+  background: var(--color-bg-subtle); border-radius: var(--radius-lg);
+  padding: var(--space-lg); box-shadow: var(--shadow-sm);
+}
+.testimonial-head { display: flex; align-items: center; gap: var(--space-md); flex-wrap: wrap; margin-bottom: var(--space-md); }
+.testimonial-logo {
+  flex: none; height: 56px; min-width: 72px; padding: 0.5rem 0.9rem;
+  background: var(--color-white); border-radius: var(--radius-md); box-shadow: var(--shadow-sm);
+  display: flex; align-items: center; justify-content: center;
+}
+.testimonial-logo img { height: 100%; width: auto; max-width: 160px; object-fit: contain; }
+.testimonial-head h3 { font-size: var(--fs-md); color: var(--color-azure-600); }
+.testimonial-stars { display: inline-flex; gap: 0.15em; margin-top: 0.35em; color: var(--color-amber-500); }
+.testimonial-stars svg { width: 17px; height: 17px; }
+.testimonial-card p { color: var(--color-text-muted); line-height: var(--lh-relaxed); }
+
+.testimonial-arrow {
+  flex: none; width: 44px; height: 44px; border-radius: 50%;
+  background: var(--color-white); border: 1px solid var(--color-border); color: var(--color-ink-900);
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+.testimonial-arrow:hover { border-color: var(--color-ink-900); box-shadow: var(--shadow-sm); }
+.testimonial-arrow:active { transform: scale(0.94); }
+.testimonial-arrow svg { width: 20px; height: 20px; }
+
+.testimonial-dots { display: flex; justify-content: center; gap: 0.6rem; margin-top: var(--space-lg); }
+.testimonial-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--color-mist-200); border: none; padding: 0; cursor: pointer; transition: background var(--transition-fast), transform var(--transition-fast); }
+.testimonial-dot:hover { background: var(--color-mist-500); }
+.testimonial-dot.is-active { background: var(--color-accent-strong); transform: scale(1.3); }
+.testimonial-dot:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
+
+@media (max-width: 640px) {
+  .testimonial-slider { gap: var(--space-sm); }
+  .testimonial-arrow { width: 36px; height: 36px; }
+  .testimonial-arrow svg { width: 16px; height: 16px; }
+  .testimonial-card { padding: var(--space-md); }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Team carousel (homepage "Meet the Team") — a fixed number of member    */
+/* cards per page (4 desktop / 2 tablet / 1 mobile, matching the grid's   */
+/* existing 900px/560px breakpoints), paged via JS-measured pixel widths  */
+/* (not CSS percentages) so pages of unequal remainder count still land   */
+/* flush; autoplay + arrows + dots, same interaction pattern as the hero  */
+/* carousel and testimonial slider elsewhere on the page.                 */
+/* ---------------------------------------------------------------------- */
+.team-carousel { display: flex; align-items: center; gap: var(--space-md); margin-top: var(--space-xl); }
+.team-viewport { flex: 1; min-width: 0; overflow: hidden; }
+.team-track { display: flex; list-style: none; margin: 0; padding: 0; transition: transform var(--transition-normal); }
+.team-member { flex: 0 0 auto; text-align: center; padding: 0 var(--space-sm); }
+
+.team-avatar {
+  display: inline-block; width: 150px; height: 150px; border-radius: 50%;
+  margin-bottom: var(--space-md);
+}
+.team-avatar-ring { display: block; width: 100%; height: 100%; border-radius: 50%; background: var(--color-mist-100); padding: 8px; }
+.team-avatar img { display: block; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.team-member h3 { font-size: var(--fs-md); }
+.team-member p { margin-top: 0.3rem; font-size: var(--fs-xs); letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-text-muted); }
+
+.team-arrow {
+  flex: none; width: 44px; height: 44px; border-radius: 50%;
+  background: var(--color-white); border: 1px solid var(--color-border); color: var(--color-ink-900);
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+.team-arrow:hover { border-color: var(--color-ink-900); box-shadow: var(--shadow-sm); }
+.team-arrow:active { transform: scale(0.94); }
+.team-arrow svg { width: 20px; height: 20px; }
+
+.team-dots { display: flex; justify-content: center; gap: 0.6rem; margin-top: var(--space-lg); }
+.team-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--color-mist-200); border: none; padding: 0; cursor: pointer; transition: background var(--transition-fast), transform var(--transition-fast); }
+.team-dot:hover { background: var(--color-mist-500); }
+.team-dot.is-active { background: var(--color-accent-strong); transform: scale(1.3); }
+.team-dot:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
+
+@media (max-width: 900px) {
+  .team-arrow { width: 36px; height: 36px; }
+  .team-arrow svg { width: 16px; height: 16px; }
+  .team-avatar { width: 130px; height: 130px; }
+}
+@media (max-width: 560px) {
+  .team-carousel { gap: var(--space-sm); }
+}
+
+/* Partners carousel ("Our Partners") — same paging/autoplay/dots pattern */
+/* as .team-carousel above, sized and styled for circular partner-logo    */
+/* badges instead of headshots (no name/role caption; the logo already    */
+/* carries the company name).                                            */
+/* ---------------------------------------------------------------------- */
+.partners-carousel { display: flex; align-items: center; gap: var(--space-md); margin-top: var(--space-xl); }
+.partners-viewport { flex: 1; min-width: 0; overflow: hidden; }
+.partners-track { display: flex; list-style: none; margin: 0; padding: 0; transition: transform var(--transition-normal); }
+.partner-member { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; padding: 0 var(--space-sm); }
+
+.partner-logo {
+  display: flex; align-items: center; justify-content: center;
+  width: 150px; height: 150px; border-radius: 50%;
+  box-shadow: var(--shadow-sm); transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+.partner-logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.partner-logo:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+
+.partners-arrow {
+  flex: none; width: 44px; height: 44px; border-radius: 50%;
+  background: var(--color-white); border: 1px solid var(--color-border); color: var(--color-ink-900);
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+.partners-arrow:hover { border-color: var(--color-ink-900); box-shadow: var(--shadow-sm); }
+.partners-arrow:active { transform: scale(0.94); }
+.partners-arrow svg { width: 20px; height: 20px; }
+
+.partners-dots { display: flex; justify-content: center; gap: 0.6rem; margin-top: var(--space-lg); }
+.partners-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--color-mist-200); border: none; padding: 0; cursor: pointer; transition: background var(--transition-fast), transform var(--transition-fast); }
+.partners-dot:hover { background: var(--color-mist-500); }
+.partners-dot.is-active { background: var(--color-accent-strong); transform: scale(1.3); }
+.partners-dot:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
+
+@media (max-width: 900px) {
+  .partners-arrow { width: 36px; height: 36px; }
+  .partners-arrow svg { width: 16px; height: 16px; }
+  .partner-logo { width: 120px; height: 120px; }
+}
+@media (max-width: 560px) {
+  .partners-carousel { gap: var(--space-sm); }
+}
+
+/* ---------------------------------------------------------------------- */
+/* "What we do?" background wave animation — four faint, smoothly         */
+/* drifting wavy lines behind the intro text/diagram. Each layer tiles a  */
+/* single-period sine-wave SVG seamlessly (background-repeat: repeat-x,   */
+/* the tile is sampled so its value at x=0 equals its value at x=1000, so */
+/* there is no visible seam) and drifts by exactly one tile-width per     */
+/* animation loop; duration/direction vary per layer for a soft parallax  */
+/* effect. Purely decorative — aria-hidden and disabled under reduced     */
+/* motion.                                                                 */
+/* ---------------------------------------------------------------------- */
+#capabilities { position: relative; overflow: hidden; }
+#capabilities > .container { position: relative; z-index: 1; }
+
+.capabilities-waves {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.2;
+}
+.capabilities-wave {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-repeat: repeat-x;
+  background-size: 1000px 100%;
+  background-position: 0 0;
+  will-change: background-position;
+}
+.capabilities-wave--1 {
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%201000%20420%22%3E%3Cpath%20d%3D%22M%200%2090.0%20L%2010%2093.8%20L%2020%2097.5%20L%2030%20101.2%20L%2040%20104.9%20L%2050%20108.5%20L%2060%20112.1%20L%2070%20115.5%20L%2080%20118.9%20L%2090%20122.1%20L%20100%20125.3%20L%20110%20128.2%20L%20120%20131.1%20L%20130%20133.7%20L%20140%20136.2%20L%20150%20138.5%20L%20160%20140.7%20L%20170%20142.6%20L%20180%20144.3%20L%20190%20145.8%20L%20200%20147.1%20L%20210%20148.1%20L%20220%20148.9%20L%20230%20149.5%20L%20240%20149.9%20L%20250%20150.0%20L%20260%20149.9%20L%20270%20149.5%20L%20280%20148.9%20L%20290%20148.1%20L%20300%20147.1%20L%20310%20145.8%20L%20320%20144.3%20L%20330%20142.6%20L%20340%20140.7%20L%20350%20138.5%20L%20360%20136.2%20L%20370%20133.7%20L%20380%20131.1%20L%20390%20128.2%20L%20400%20125.3%20L%20410%20122.1%20L%20420%20118.9%20L%20430%20115.5%20L%20440%20112.1%20L%20450%20108.5%20L%20460%20104.9%20L%20470%20101.2%20L%20480%2097.5%20L%20490%2093.8%20L%20500%2090.0%20L%20510%2086.2%20L%20520%2082.5%20L%20530%2078.8%20L%20540%2075.1%20L%20550%2071.5%20L%20560%2067.9%20L%20570%2064.5%20L%20580%2061.1%20L%20590%2057.9%20L%20600%2054.7%20L%20610%2051.8%20L%20620%2048.9%20L%20630%2046.3%20L%20640%2043.8%20L%20650%2041.5%20L%20660%2039.3%20L%20670%2037.4%20L%20680%2035.7%20L%20690%2034.2%20L%20700%2032.9%20L%20710%2031.9%20L%20720%2031.1%20L%20730%2030.5%20L%20740%2030.1%20L%20750%2030.0%20L%20760%2030.1%20L%20770%2030.5%20L%20780%2031.1%20L%20790%2031.9%20L%20800%2032.9%20L%20810%2034.2%20L%20820%2035.7%20L%20830%2037.4%20L%20840%2039.3%20L%20850%2041.5%20L%20860%2043.8%20L%20870%2046.3%20L%20880%2048.9%20L%20890%2051.8%20L%20900%2054.7%20L%20910%2057.9%20L%20920%2061.1%20L%20930%2064.5%20L%20940%2067.9%20L%20950%2071.5%20L%20960%2075.1%20L%20970%2078.8%20L%20980%2082.5%20L%20990%2086.2%20L%201000%2090.0%22%20fill%3D%22none%22%20stroke%3D%22%233d7cf4%22%20stroke-opacity%3D%220.3%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E");
+  animation: capabilities-wave-drift 34s linear infinite;
+}
+.capabilities-wave--2 {
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%201000%20420%22%3E%3Cpath%20d%3D%22M%200%20274.6%20L%2010%20276.3%20L%2020%20277.8%20L%2030%20278.8%20L%2040%20279.6%20L%2050%20279.9%20L%2060%20280.0%20L%2070%20279.6%20L%2080%20278.9%20L%2090%20277.9%20L%20100%20276.5%20L%20110%20274.8%20L%20120%20272.7%20L%20130%20270.3%20L%20140%20267.6%20L%20150%20264.6%20L%20160%20261.3%20L%20170%20257.7%20L%20180%20253.9%20L%20190%20249.8%20L%20200%20245.4%20L%20210%20240.8%20L%20220%20236.1%20L%20230%20231.1%20L%20240%20226.0%20L%20250%20220.8%20L%20260%20215.4%20L%20270%20209.9%20L%20280%20204.4%20L%20290%20198.8%20L%20300%20193.1%20L%20310%20187.5%20L%20320%20181.8%20L%20330%20176.2%20L%20340%20170.7%20L%20350%20165.2%20L%20360%20159.8%20L%20370%20154.5%20L%20380%20149.4%20L%20390%20144.5%20L%20400%20139.7%20L%20410%20135.1%20L%20420%20130.7%20L%20430%20126.6%20L%20440%20122.7%20L%20450%20119.1%20L%20460%20115.7%20L%20470%20112.7%20L%20480%20110.0%20L%20490%20107.5%20L%20500%20105.4%20L%20510%20103.7%20L%20520%20102.2%20L%20530%20101.2%20L%20540%20100.4%20L%20550%20100.1%20L%20560%20100.0%20L%20570%20100.4%20L%20580%20101.1%20L%20590%20102.1%20L%20600%20103.5%20L%20610%20105.2%20L%20620%20107.3%20L%20630%20109.7%20L%20640%20112.4%20L%20650%20115.4%20L%20660%20118.7%20L%20670%20122.3%20L%20680%20126.1%20L%20690%20130.2%20L%20700%20134.6%20L%20710%20139.2%20L%20720%20143.9%20L%20730%20148.9%20L%20740%20154.0%20L%20750%20159.2%20L%20760%20164.6%20L%20770%20170.1%20L%20780%20175.6%20L%20790%20181.2%20L%20800%20186.9%20L%20810%20192.5%20L%20820%20198.2%20L%20830%20203.8%20L%20840%20209.3%20L%20850%20214.8%20L%20860%20220.2%20L%20870%20225.5%20L%20880%20230.6%20L%20890%20235.5%20L%20900%20240.3%20L%20910%20244.9%20L%20920%20249.3%20L%20930%20253.4%20L%20940%20257.3%20L%20950%20260.9%20L%20960%20264.3%20L%20970%20267.3%20L%20980%20270.0%20L%20990%20272.5%20L%201000%20274.6%22%20fill%3D%22none%22%20stroke%3D%22%232c5fd1%22%20stroke-opacity%3D%220.55%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E");
+  animation: capabilities-wave-drift 26s linear infinite reverse;
+}
+.capabilities-wave--3 {
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%201000%20420%22%3E%3Cpath%20d%3D%22M%200%20246.1%20L%2010%20242.0%20L%2020%20238.0%20L%2030%20234.2%20L%2040%20230.5%20L%2050%20226.9%20L%2060%20223.5%20L%2070%20220.3%20L%2080%20217.3%20L%2090%20214.5%20L%20100%20212.0%20L%20110%20209.6%20L%20120%20207.5%20L%20130%20205.7%20L%20140%20204.1%20L%20150%20202.7%20L%20160%20201.6%20L%20170%20200.8%20L%20180%20200.3%20L%20190%20200.0%20L%20200%20200.0%20L%20210%20200.3%20L%20220%20200.9%20L%20230%20201.7%20L%20240%20202.8%20L%20250%20204.2%20L%20260%20205.9%20L%20270%20207.7%20L%20280%20209.9%20L%20290%20212.2%20L%20300%20214.8%20L%20310%20217.7%20L%20320%20220.7%20L%20330%20223.9%20L%20340%20227.3%20L%20350%20230.9%20L%20360%20234.6%20L%20370%20238.4%20L%20380%20242.4%20L%20390%20246.5%20L%20400%20250.7%20L%20410%20255.0%20L%20420%20259.3%20L%20430%20263.7%20L%20440%20268.0%20L%20450%20272.4%20L%20460%20276.8%20L%20470%20281.2%20L%20480%20285.5%20L%20490%20289.8%20L%20500%20293.9%20L%20510%20298.0%20L%20520%20302.0%20L%20530%20305.8%20L%20540%20309.5%20L%20550%20313.1%20L%20560%20316.5%20L%20570%20319.7%20L%20580%20322.7%20L%20590%20325.5%20L%20600%20328.0%20L%20610%20330.4%20L%20620%20332.5%20L%20630%20334.3%20L%20640%20335.9%20L%20650%20337.3%20L%20660%20338.4%20L%20670%20339.2%20L%20680%20339.7%20L%20690%20340.0%20L%20700%20340.0%20L%20710%20339.7%20L%20720%20339.1%20L%20730%20338.3%20L%20740%20337.2%20L%20750%20335.8%20L%20760%20334.1%20L%20770%20332.3%20L%20780%20330.1%20L%20790%20327.8%20L%20800%20325.2%20L%20810%20322.3%20L%20820%20319.3%20L%20830%20316.1%20L%20840%20312.7%20L%20850%20309.1%20L%20860%20305.4%20L%20870%20301.6%20L%20880%20297.6%20L%20890%20293.5%20L%20900%20289.3%20L%20910%20285.0%20L%20920%20280.7%20L%20930%20276.3%20L%20940%20272.0%20L%20950%20267.6%20L%20960%20263.2%20L%20970%20258.8%20L%20980%20254.5%20L%20990%20250.2%20L%201000%20246.1%22%20fill%3D%22none%22%20stroke%3D%22%233d7cf4%22%20stroke-opacity%3D%220.22%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E");
+  animation: capabilities-wave-drift 40s linear infinite;
+}
+.capabilities-wave--4 {
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%201000%20420%22%3E%3Cpath%20d%3D%22M%200%20307.9%20L%2010%20310.3%20L%2020%20312.9%20L%2030%20315.6%20L%2040%20318.4%20L%2050%20321.3%20L%2060%20324.2%20L%2070%20327.2%20L%2080%20330.3%20L%2090%20333.4%20L%20100%20336.5%20L%20110%20339.7%20L%20120%20342.8%20L%20130%20345.9%20L%20140%20349.0%20L%20150%20352.1%20L%20160%20355.1%20L%20170%20358.1%20L%20180%20361.0%20L%20190%20363.8%20L%20200%20366.5%20L%20210%20369.1%20L%20220%20371.6%20L%20230%20374.0%20L%20240%20376.2%20L%20250%20378.3%20L%20260%20380.2%20L%20270%20382.0%20L%20280%20383.6%20L%20290%20385.1%20L%20300%20386.4%20L%20310%20387.4%20L%20320%20388.3%20L%20330%20389.0%20L%20340%20389.6%20L%20350%20389.9%20L%20360%20390.0%20L%20370%20389.9%20L%20380%20389.6%20L%20390%20389.2%20L%20400%20388.5%20L%20410%20387.7%20L%20420%20386.6%20L%20430%20385.4%20L%20440%20384.0%20L%20450%20382.4%20L%20460%20380.7%20L%20470%20378.7%20L%20480%20376.7%20L%20490%20374.5%20L%20500%20372.1%20L%20510%20369.7%20L%20520%20367.1%20L%20530%20364.4%20L%20540%20361.6%20L%20550%20358.7%20L%20560%20355.8%20L%20570%20352.8%20L%20580%20349.7%20L%20590%20346.6%20L%20600%20343.5%20L%20610%20340.3%20L%20620%20337.2%20L%20630%20334.1%20L%20640%20331.0%20L%20650%20327.9%20L%20660%20324.9%20L%20670%20321.9%20L%20680%20319.0%20L%20690%20316.2%20L%20700%20313.5%20L%20710%20310.9%20L%20720%20308.4%20L%20730%20306.0%20L%20740%20303.8%20L%20750%20301.7%20L%20760%20299.8%20L%20770%20298.0%20L%20780%20296.4%20L%20790%20294.9%20L%20800%20293.6%20L%20810%20292.6%20L%20820%20291.7%20L%20830%20291.0%20L%20840%20290.4%20L%20850%20290.1%20L%20860%20290.0%20L%20870%20290.1%20L%20880%20290.4%20L%20890%20290.8%20L%20900%20291.5%20L%20910%20292.3%20L%20920%20293.4%20L%20930%20294.6%20L%20940%20296.0%20L%20950%20297.6%20L%20960%20299.3%20L%20970%20301.3%20L%20980%20303.3%20L%20990%20305.5%20L%201000%20307.9%22%20fill%3D%22none%22%20stroke%3D%22%237ba7f7%22%20stroke-opacity%3D%220.18%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E");
+  animation: capabilities-wave-drift 22s linear infinite reverse;
+}
+
+@keyframes capabilities-wave-drift {
+  from { background-position-x: 0; }
+  to { background-position-x: 1000px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .capabilities-wave { animation: none; }
+}

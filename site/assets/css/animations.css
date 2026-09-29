@@ -1,0 +1,95 @@
+/* ==========================================================================
+   iNNOVATEQ — Animation & Motion
+   All effects are GPU-friendly (transform/opacity) and respect
+   prefers-reduced-motion via the global rule in style.css.
+   ========================================================================== */
+
+/* ---------------------------------------------------------------------- */
+/* Scroll reveal (driven by IntersectionObserver in animations.js)        */
+/* ---------------------------------------------------------------------- */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1);
+  transition-delay: var(--reveal-delay, 0s);
+}
+[data-reveal].is-visible { opacity: 1; transform: translateY(0); }
+
+[data-reveal="fade"] { transform: none; }
+[data-reveal="scale"] { transform: scale(0.94); }
+[data-reveal="scale"].is-visible { transform: scale(1); }
+[data-reveal="left"] { transform: translateX(-32px); }
+[data-reveal="left"].is-visible { transform: translateX(0); }
+[data-reveal="right"] { transform: translateX(32px); }
+[data-reveal="right"].is-visible { transform: translateX(0); }
+
+[data-reveal-group] > * { opacity: 0; transform: translateY(24px); transition: opacity .7s cubic-bezier(0.16,1,0.3,1), transform .7s cubic-bezier(0.16,1,0.3,1); }
+[data-reveal-group].is-visible > * { opacity: 1; transform: translateY(0); }
+[data-reveal-group].is-visible > *:nth-child(1) { transition-delay: 0.05s; }
+[data-reveal-group].is-visible > *:nth-child(2) { transition-delay: 0.12s; }
+[data-reveal-group].is-visible > *:nth-child(3) { transition-delay: 0.19s; }
+[data-reveal-group].is-visible > *:nth-child(4) { transition-delay: 0.26s; }
+[data-reveal-group].is-visible > *:nth-child(5) { transition-delay: 0.33s; }
+[data-reveal-group].is-visible > *:nth-child(6) { transition-delay: 0.4s; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal], [data-reveal-group] > * { opacity: 1 !important; transform: none !important; transition: none !important; }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Keyframes                                                              */
+/* ---------------------------------------------------------------------- */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes floatSlow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+@keyframes pulseGlow { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+@keyframes dashMove { to { stroke-dashoffset: -400; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes gridPan { from { background-position: 0 0; } to { background-position: 56px 56px; } }
+
+/* ---------------------------------------------------------------------- */
+/* Hero background                                                        */
+/* ---------------------------------------------------------------------- */
+.hero-grid-bg {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 56px 56px;
+  animation: gridPan 12s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) { .hero-grid-bg { animation: none; } }
+
+/* Reused on the homepage "Recognized Business Values" (#value) and
+   "Nibras Footprint" (#footprint) sections — both dark section--inverse
+   blocks get position:relative from the base .section rule already;
+   this just adds the overflow/stacking containment .page-header already
+   relies on so the panning grid never bleeds past the section edge. */
+#value, #footprint { overflow: hidden; isolation: isolate; }
+
+.hero-orb {
+  position: absolute; border-radius: 50%; filter: blur(90px);
+  animation: floatSlow 9s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) { .hero-orb { animation: none; } }
+
+.node-line { stroke-dasharray: 6 10; animation: dashMove 6s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .node-line { animation: none; } }
+
+.pulse-dot { animation: pulseGlow 2.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .pulse-dot { animation: none; opacity: 1; } }
+
+/* ---------------------------------------------------------------------- */
+/* Logo marquee (customer/partner strip)                                  */
+/* ---------------------------------------------------------------------- */
+.marquee-track { display: flex; width: max-content; animation: marquee 30s linear infinite; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .marquee-track { animation: none; } }
+
+/* ---------------------------------------------------------------------- */
+/* Loading / skeleton                                                     */
+/* ---------------------------------------------------------------------- */
+.spin { animation: spin 1s linear infinite; }
+
+/* Counter number ticking uses plain JS text updates — no animation needed here,
+   but we ease the container in via [data-reveal] above. */

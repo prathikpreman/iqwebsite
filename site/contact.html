@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" data-root="" data-site-root="../">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — iNNOVATEQ</title>
+<meta name="description" content="Contact iNNOVATEQ: Knowledge Oasis Muscat, Sultanate of Oman. Phone, email and office hours, plus a direct contact form.">
+<link rel="icon" href="assets/icons/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/css/style.css?v=65">
+<link rel="stylesheet" href="assets/css/components.css?v=65">
+<link rel="stylesheet" href="assets/css/animations.css?v=65">
+<link rel="stylesheet" href="assets/css/responsive.css?v=65">
+</head>
+<body>
+<a href="#main-content" class="skip-link">Skip to content</a>
+<div data-include="header"></div>
+
+<main id="main-content">
+  <header class="page-header">
+    <div class="page-header-photo" aria-hidden="true"><img src="assets/images/contact/contact-banner.webp" alt=""></div>
+    <div class="hero-grid-bg" aria-hidden="true"></div>
+    <div class="container">
+      <nav class="breadcrumb"><a href="../index.html">Home</a><span>/</span><span>Contact</span></nav>
+      <span class="eyebrow eyebrow--inverse">Contact</span>
+      <h1>Let's Talk</h1>
+      <p class="lede">Tell us where the time is going, and we'll show you what Nibras‑NX would surface first.</p>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="container">
+      <div class="split" style="align-items:flex-start;">
+        <div data-reveal="left">
+          <form data-validate-form novalidate method="post" action="assets/php/send-mail.php">
+            <input type="hidden" name="_subject" value="New contact form message — iNNOVATEQ">
+            <div class="form-grid">
+              <div class="field">
+                <label for="name">Name</label>
+                <input id="name" name="name" type="text" data-validate="required" data-error-required="Please enter your name.">
+                <span class="field-error" role="alert"></span>
+              </div>
+              <div class="field">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" data-validate="required email" data-error-required="Please enter your email." data-error-email="Please enter a valid email address.">
+                <span class="field-error" role="alert"></span>
+              </div>
+              <div class="field field--full">
+                <label for="subject">Subject</label>
+                <input id="subject" name="subject" type="text" data-validate="required" data-error-required="Please add a subject.">
+                <span class="field-error" role="alert"></span>
+              </div>
+              <div class="field field--full">
+                <label for="message">Message</label>
+                <textarea id="message" name="message" data-validate="required minlength:15" data-error-required="Please enter a message." data-error-minlength="Please tell us a little more."></textarea>
+                <span class="field-error" role="alert"></span>
+              </div>
+            </div>
+            <button type="submit" class="btn btn--primary" style="margin-top:var(--space-md);" data-label="Send message">Send message</button>
+            <div class="form-status" role="status"></div>
+          </form>
+        </div>
+
+        <aside data-reveal="right">
+          <div class="card" style="background:var(--color-ink-950); color:var(--color-white); border:none;">
+            <img src="assets/images/logo-white.png" alt="iNNOVATEQ" style="height:26px; width:auto; display:block; margin-bottom:var(--space-md);">
+            <h3 style="font-size:var(--fs-md);">Head office</h3>
+            <address style="font-style:normal; margin-top:var(--space-sm); color:var(--color-mist-300); font-size:var(--fs-sm); line-height:var(--lh-relaxed);">
+              Knowledge Oasis Muscat<br>Al‑Seeb, Muscat<br>Sultanate of Oman<br>PO Box 1304, PC 116
+            </address>
+            <div style="margin-top:var(--space-md); padding-top:var(--space-md); border-top:1px solid var(--color-border-inverse); font-size:var(--fs-sm); color:var(--color-mist-300);">
+              <p><a href="tel:+96824341353" style="color:var(--color-signal-400);">+968 2434 1353</a></p>
+              <p style="margin-top:.4rem;"><a href="tel:+96898088480" style="color:var(--color-signal-400);">+968 9808 8480</a></p>
+              <p style="margin-top:.4rem;"><a href="mailto:info@innovateq.digital" style="color:var(--color-signal-400);">info@innovateq.digital</a></p>
+              <p style="margin-top:.4rem;">Sun&ndash;Thu, 8am&ndash;4pm</p>
+            </div>
+          </div>
+
+          <div style="margin-top:var(--space-md); border:1px solid var(--color-border); border-radius:var(--radius-lg); padding:var(--space-lg);">
+            <h3 style="font-size:var(--fs-sm); text-transform:uppercase; letter-spacing:.06em; color:var(--color-text-muted);">Looking to join the team instead?</h3>
+            <a href="careers.html#apply" class="case-card-link" style="margin-top:var(--space-sm); display:inline-flex;">Visit Careers <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div data-include="footer"></div>
+<script src="assets/js/include.js?v=65"></script>
+<script src="assets/js/navigation.js?v=65"></script>
+<script src="assets/js/animations.js?v=65"></script>
+<script src="assets/js/interactions.js?v=65"></script>
+<script src="assets/js/main.js?v=65"></script>
+</body>
+</html>

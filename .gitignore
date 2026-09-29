@@ -1,0 +1,6 @@
+.DS_Store
+*.zip
+*.tar.gz
+_tmp_wells_images/
+Claude outputs/
+claude/

@@ -1,0 +1,92 @@
+/* ==========================================================================
+   iNNOVATEQ — Breakpoint Overrides
+   Fluid type/spacing (clamp) already scales continuously; this file
+   handles structural changes: column-count shifts, stacking, nav mode.
+   Audited at 1920 / 1440 / 1280 / 1024 / 768 / 480 / 390 / 375 / 320.
+   ========================================================================== */
+
+/* ---- ≤1280px : tighten container gutters slightly, hero art shrinks ---- */
+@media (max-width: 1280px) {
+  .hero-visual { transform: scale(0.92); }
+  .capability-shell { grid-template-columns: repeat(3, minmax(0,1fr)); }
+}
+
+/* ---- ≤1024px : large tablet / small laptop ---- */
+@media (max-width: 1024px) {
+  .hero .container { grid-template-columns: minmax(0,1fr); text-align: left; }
+  .hero-visual { order: -1; margin-bottom: var(--space-lg); height: 320px; }
+  .split { grid-template-columns: minmax(0,1fr); }
+  .split-visual { order: -1; }
+  .solution-grid, .case-grid { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+  .footprint-grid { grid-template-columns: minmax(0,1fr); }
+}
+
+/* ---- ≤900px : tablet portrait ---- */
+@media (max-width: 900px) {
+  .services-layout { grid-template-columns: minmax(0,1fr); }
+  .services-nav { position: static; flex-direction: row; overflow-x: auto; gap: var(--space-xs); padding-bottom: var(--space-2xs); }
+  .services-nav a { flex: none; white-space: nowrap; padding: 0.6rem 0.9rem; }
+  .services-nav-icon { width: 30px; height: 30px; }
+  .services-nav-icon svg { width: 16px; height: 16px; }
+  .capability-shell { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .footer-grid { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+  .value-props-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .tech-panel-layout { grid-template-columns: minmax(0,1fr); }
+  .tech-panel-nav { position: static; }
+  .tech-module-list { flex-direction: row; overflow-x: auto; gap: var(--space-xs); padding-bottom: var(--space-2xs); }
+  .tech-module { flex: none; white-space: nowrap; }
+}
+
+/* ---- ≤640px : phones — technology switcher tabs go 2-up ---- */
+@media (max-width: 640px) {
+  .tech-tabs { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .tech-tab { padding: var(--space-md) var(--space-sm); }
+}
+
+/* ---- ≤760px : collapse horizontal scroll-reveal to vertical ----
+   (keeps [data-reveal="left"/"right"] from ever nudging layout
+   width on narrow screens, where a horizontal slide reads worse anyway) */
+@media (max-width: 760px) {
+  [data-reveal="left"], [data-reveal="right"] { transform: translateY(20px); }
+}
+
+/* ---- ≤768px : mobile landscape / small tablet ---- */
+@media (max-width: 768px) {
+  :root { --section-pad-y: clamp(3rem, 2.4rem + 4vw, 6rem); }
+  .page-header { padding-top: calc(68px + var(--space-xl)); }
+  .cta-band { text-align: center; }
+  .metric-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .case-grid, .solution-grid { grid-template-columns: minmax(0,1fr); }
+  .footer-bottom { flex-direction: column; align-items: flex-start; gap: var(--space-sm); }
+}
+
+/* ---- ≤560px : phones ---- */
+@media (max-width: 560px) {
+  .metric-grid { grid-template-columns: minmax(0,1fr); }
+  .btn-row { flex-direction: column; align-items: stretch; }
+  .btn-row .btn { width: 100%; }
+  .header-inner { padding-inline: var(--space-sm); }
+  .brand-mark { padding: 0.4rem 0.6rem; }
+  .brand-mark img { height: 24px; }
+  .case-card-metrics { gap: var(--space-sm); }
+  .value-props-grid { grid-template-columns: minmax(0,1fr); }
+  .capability-shell { grid-template-columns: minmax(0,1fr); }
+  .footer-grid { grid-template-columns: minmax(0,1fr); }
+  .footprint-stats { grid-template-columns: minmax(0,1fr); }
+  .customer-strip { grid-template-columns: minmax(0,1fr); }
+  .logo-wall { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .hero-orb { display: none; }
+}
+
+/* ---- ≤390px : small phones ---- */
+@media (max-width: 390px) {
+  .hero-badges { display: none; }
+  .icon-tile { width: 44px; height: 44px; }
+  .icon-tile svg { width: 20px; height: 20px; }
+}
+
+/* ---- Print ---- */
+@media print {
+  .site-header, .mobile-nav, .back-to-top, .cta-band, video { display: none !important; }
+  body { color: #000; }
+}
